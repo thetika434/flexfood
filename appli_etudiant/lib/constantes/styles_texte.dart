@@ -40,21 +40,21 @@ class StylesTexte {
   );
 
   static const TextStyle solde = TextStyle(
-    fontSize: 36,
-    fontWeight: FontWeight.bold,
-    color: Couleurs.texte,
+    fontSize: 42,
+    fontWeight: FontWeight.w900,
+    color: Couleurs.vertFonce,
   );
 
   static const TextStyle montantPositif = TextStyle(
     fontSize: 14,
     fontWeight: FontWeight.w600,
-    color: Couleurs.vertVif,
+    color: Couleurs.montantPositifCouleur,
   );
 
   static const TextStyle montantNegatif = TextStyle(
     fontSize: 14,
     fontWeight: FontWeight.w600,
-    color: Couleurs.rouge,
+    color: Couleurs.montantNegatifCouleur,
   );
 
   static const TextStyle bouton = TextStyle(

@@ -22,18 +22,35 @@ class ElementTransaction extends StatelessWidget {
       case TypeTransaction.rechargement:
         return Icons.account_balance_wallet;
       case TypeTransaction.transfertEnvoye:
-        return Icons.arrow_forward_ios;
+        return Icons.send;
       case TypeTransaction.transfertRecu:
-        return Icons.arrow_back_ios;
+        return Icons.south_west;
     }
   }
 
-  Color _obtenirCouleurIcone() {
+  Color _obtenirCouleurFondIcone() {
     switch (transaction.type) {
+      case TypeTransaction.repas:
+        return Couleurs.fondIconeRepas;
+      case TypeTransaction.rechargement:
+        return Couleurs.fondIconeRechargement;
+      case TypeTransaction.transfertRecu:
+        return Couleurs.fondIconeTransfertRecu;
       case TypeTransaction.transfertEnvoye:
-        return Couleurs.iconeGrise;
-      default:
-        return Couleurs.vertVif;
+        return Couleurs.fondIconeTransfertEnvoye;
+    }
+  }
+
+  Color _obtenirCouleurSymbole() {
+    switch (transaction.type) {
+      case TypeTransaction.repas:
+        return Couleurs.iconeRepas;
+      case TypeTransaction.rechargement:
+        return Couleurs.iconeRechargement;
+      case TypeTransaction.transfertRecu:
+        return Couleurs.iconeTransfertRecu;
+      case TypeTransaction.transfertEnvoye:
+        return Couleurs.iconeTransfertEnvoye;
     }
   }
 
@@ -42,9 +59,18 @@ class ElementTransaction extends StatelessWidget {
     return GestureDetector(
       onTap: onAppui,
       child: Container(
-        padding: const EdgeInsets.symmetric(
-          horizontal: Dimensions.espaceM,
-          vertical: Dimensions.espaceM,
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Couleurs.blanc,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Couleurs.surfaceContainer, width: 1),
+          boxShadow: const [
+            BoxShadow(
+              color: Color(0x05000000),
+              blurRadius: 20,
+              offset: Offset(0, 4),
+            ),
+          ],
         ),
         child: Row(
           children: [
@@ -53,9 +79,9 @@ class ElementTransaction extends StatelessWidget {
               height: 44,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: _obtenirCouleurIcone(),
+                color: _obtenirCouleurFondIcone(),
               ),
-              child: Icon(_obtenirIcone(), color: Couleurs.blanc, size: 20),
+              child: Icon(_obtenirIcone(), color: _obtenirCouleurSymbole(), size: 20),
             ),
             const SizedBox(width: Dimensions.espaceM),
             Expanded(

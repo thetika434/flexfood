@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'constantes/couleurs.dart';
+import 'donnees_fictives/etudiants_fictifs.dart';
 import 'navigation/routeur.dart';
+import 'services/service_authentification.dart';
 
 void main() {
+  Session.etudiantConnecte = EtudiantsFictifs.moi;
   runApp(const AppFlexFood());
 }
 
@@ -19,7 +22,7 @@ class AppFlexFood extends StatelessWidget {
         scaffoldBackgroundColor: Couleurs.fondPrincipal,
         useMaterial3: true,
       ),
-      initialRoute: Routes.historique,
+      initialRoute: Routes.accueil,
       routes: Routes.obtenirRoutes(),
     );
   }

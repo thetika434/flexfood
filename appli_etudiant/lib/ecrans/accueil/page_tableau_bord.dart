@@ -50,8 +50,8 @@ class _PageTableauBordEtat extends State<PageTableauBord> {
               GestureDetector(
                 onTap: () =>
                     Navigator.pushNamed(context, Routes.changerCodeSecret),
-                child: const Icon(Icons.settings,
-                    color: Couleurs.texte, size: 26),
+                child:
+                    const Icon(Icons.settings, color: Couleurs.texte, size: 26),
               ),
 
               const SizedBox(height: Dimensions.espaceL),
@@ -64,7 +64,7 @@ class _PageTableauBordEtat extends State<PageTableauBord> {
                   children: [
                     Text(
                       _soldeVisible
-                          ? '${Formateur.formaterSolde(etudiant.solde)} F'
+                          ? '${Formateur.formaterSolde(etudiant.solde)} '
                           : '••••••••••',
                       style: StylesTexte.solde,
                     ),
@@ -72,9 +72,7 @@ class _PageTableauBordEtat extends State<PageTableauBord> {
                     GestureDetector(
                       onTap: _basculerSolde,
                       child: Icon(
-                        _soldeVisible
-                            ? Icons.visibility_off
-                            : Icons.visibility,
+                        _soldeVisible ? Icons.visibility_off : Icons.visibility,
                         color: Couleurs.texteSecondaire,
                         size: 22,
                       ),
@@ -99,10 +97,10 @@ class _PageTableauBordEtat extends State<PageTableauBord> {
                 children: [
                   Expanded(
                     child: _BoutonAction(
-                      icone: Icons.swap_horiz,
+                      icone: Icons.currency_exchange,
                       label: 'Transfert',
-                      couleurFond: Couleurs.vertVif,
-                      couleurIcone: Couleurs.blanc,
+                      couleurFond: Couleurs.fondIconeTransfertRecu,
+                      couleurIcone: Couleurs.texteSecondaire,
                       onAppui: () => Navigator.pushNamed(
                           context, Routes.choisirModeTransfert),
                     ),
@@ -110,7 +108,7 @@ class _PageTableauBordEtat extends State<PageTableauBord> {
                   const SizedBox(width: Dimensions.espaceM),
                   Expanded(
                     child: _BoutonAction(
-                      icone: Icons.receipt_long,
+                      icone: Icons.receipt,
                       label: 'Historique',
                       couleurFond: Couleurs.iconeGrise.withValues(alpha: 0.25),
                       couleurIcone: Couleurs.texteSecondaire,
@@ -127,8 +125,7 @@ class _PageTableauBordEtat extends State<PageTableauBord> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Transactions Recentes',
-                      style: StylesTexte.titrePetit),
+                  Text('Transactions Recentes', style: StylesTexte.titrePetit),
                   GestureDetector(
                     onTap: () =>
                         Navigator.pushNamed(context, Routes.historique),
@@ -140,15 +137,11 @@ class _PageTableauBordEtat extends State<PageTableauBord> {
               const SizedBox(height: Dimensions.espaceS),
 
               // Liste des transactions récentes
-              Container(
-                decoration: BoxDecoration(
-                  color: Couleurs.blanc,
-                  borderRadius:
-                      BorderRadius.circular(Dimensions.rayonCarte),
-                ),
-                child: Column(
-                  children: _dernieresTransactions.map((transaction) {
-                    return ElementTransaction(
+              Column(
+                children: _dernieresTransactions.map((transaction) {
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: Dimensions.espaceS),
+                    child: ElementTransaction(
                       transaction: transaction,
                       onAppui: () {
                         if (transaction.type == TypeTransaction.repas) {
@@ -159,9 +152,9 @@ class _PageTableauBordEtat extends State<PageTableauBord> {
                           );
                         }
                       },
-                    );
-                  }).toList(),
-                ),
+                    ),
+                  );
+                }).toList(),
               ),
 
               const SizedBox(height: Dimensions.espaceL),
@@ -169,14 +162,14 @@ class _PageTableauBordEtat extends State<PageTableauBord> {
               // Lien changer code secret en bas
               Center(
                 child: GestureDetector(
-                  onTap: () => Navigator.pushNamed(
-                      context, Routes.changerCodeSecret),
-                  child: Row(
+                  onTap: () =>
+                      Navigator.pushNamed(context, Routes.changerCodeSecret),
+                  child: const Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.lock_reset,
+                      Icon(Icons.lock_reset,
                           size: 16, color: Couleurs.texteSecondaire),
-                      const SizedBox(width: 6),
+                      SizedBox(width: 6),
                       Text('Changer le code secret',
                           style: StylesTexte.corpsSecondaire),
                     ],
@@ -233,8 +226,7 @@ class _BoutonAction extends StatelessWidget {
             const SizedBox(width: 10),
             Text(
               label,
-              style: StylesTexte.corps
-                  .copyWith(fontWeight: FontWeight.w500),
+              style: StylesTexte.corps.copyWith(fontWeight: FontWeight.w500),
             ),
           ],
         ),
