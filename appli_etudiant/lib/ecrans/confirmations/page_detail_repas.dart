@@ -1,5 +1,5 @@
 // ============================================================
-// DÉVELOPPEUR : David
+// DÉVELOPPEUR : Bigo
 // ÉCRAN       : Page Détail Repas
 // ============================================================
 // DESIGN : Voir image "detail_repas.png"
@@ -31,7 +31,7 @@ class PageDetailRepas extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Scaffold(
       body: Center(
-        child: Text('Page Détail Repas — À implémenter par David'),
+        child: Text('Page Détail Repas — À implémenter par Bigo'),
       ),
     );
   }

@@ -1,5 +1,5 @@
 // ============================================================
-// DÉVELOPPEUR : Bigo
+// DÉVELOPPEUR : David
 // ÉCRAN       : Page Confirmation Rechargement
 // ============================================================
 // DESIGN : Voir image "confirmation_rechargement.png"
@@ -31,7 +31,7 @@ class PageConfirmationRechargement extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Scaffold(
       body: Center(
-        child: Text('Page Confirmation Rechargement — À implémenter par Bigo'),
+        child: Text('Page Confirmation Rechargement — À implémenter par David'),
       ),
     );
   }

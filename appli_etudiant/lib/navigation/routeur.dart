@@ -5,7 +5,7 @@ import '../ecrans/accueil/page_tableau_bord.dart';
 import '../ecrans/authentification/page_connexion.dart';
 import '../ecrans/authentification/page_deverrouillage.dart';
 import '../ecrans/historique/page_historique.dart';
-import '../ecrans/historique/page_detail_repas.dart';
+import '../ecrans/confirmations/page_detail_repas.dart';
 import '../ecrans/transfert/page_choisir_mode_transfert.dart';
 import '../ecrans/transfert/page_saisir_matricule.dart';
 import '../ecrans/transfert/page_montant_transfert.dart';
