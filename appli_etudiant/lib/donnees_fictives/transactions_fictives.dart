@@ -4,48 +4,60 @@ import '../modeles/favori.dart';
 class TransactionsFictives {
   TransactionsFictives._();
 
+  static final DateTime _maintenant = DateTime.now();
+  static final DateTime _aujourdhui = DateTime(
+    _maintenant.year,
+    _maintenant.month,
+    _maintenant.day,
+  );
+  static final DateTime _hier = _aujourdhui.subtract(const Duration(days: 1));
+  static final DateTime _datePrecedente =
+      _aujourdhui.subtract(const Duration(days: 2));
+
   static final List<Transaction> transactions = [
-    Transaction(
-      id: '#4503',
-      type: TypeTransaction.transfertRecu,
-      montant: 500,
-      dateHeure: DateTime.now().subtract(const Duration(hours: 14)),
-      autrePartiNom: 'Kyra',
-      autrePartiMatricule: '22-ESATIC-0012',
-    ),
     Transaction(
       id: '#4502',
       type: TypeTransaction.repas,
       montant: -200,
-      dateHeure: DateTime(2025, 10, 25, 12, 45),
+      dateHeure: _aujourdhui.add(
+        const Duration(hours: 12, minutes: 45),
+      ),
       service: ServiceRepas.midi,
     ),
     Transaction(
       id: '#4501',
       type: TypeTransaction.rechargement,
       montant: 5000,
-      dateHeure: DateTime(2025, 10, 25, 9, 12),
-    ),
-    Transaction(
-      id: '#4500',
-      type: TypeTransaction.transfertEnvoye,
-      montant: -200,
-      dateHeure: DateTime(2025, 10, 24, 11, 30),
-      autrePartiNom: 'Kyra',
-      autrePartiMatricule: '22-ESATIC-0012',
+      dateHeure: _aujourdhui.add(
+        const Duration(hours: 9, minutes: 12),
+      ),
     ),
     Transaction(
       id: '#4499',
       type: TypeTransaction.repas,
       montant: -200,
-      dateHeure: DateTime(2025, 10, 24, 12, 45),
+      dateHeure: _hier.add(
+        const Duration(hours: 12, minutes: 45),
+      ),
       service: ServiceRepas.midi,
+    ),
+    Transaction(
+      id: '#4500',
+      type: TypeTransaction.transfertEnvoye,
+      montant: -200,
+      dateHeure: _hier.add(
+        const Duration(hours: 11, minutes: 30),
+      ),
+      autrePartiNom: 'Kyra',
+      autrePartiMatricule: '22-ESATIC-0012',
     ),
     Transaction(
       id: '#4498',
       type: TypeTransaction.transfertEnvoye,
       montant: -1200,
-      dateHeure: DateTime(2025, 10, 23, 18, 30),
+      dateHeure: _datePrecedente.add(
+        const Duration(hours: 18, minutes: 30),
+      ),
       autrePartiNom: 'Kyra',
       autrePartiMatricule: '22-ESATIC-0012',
     ),
@@ -53,7 +65,9 @@ class TransactionsFictives {
       id: '#4497',
       type: TypeTransaction.repas,
       montant: -100,
-      dateHeure: DateTime(2025, 10, 23, 7, 45),
+      dateHeure: _datePrecedente.add(
+        const Duration(hours: 7, minutes: 45),
+      ),
       service: ServiceRepas.matin,
     ),
   ];
