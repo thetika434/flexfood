@@ -5,7 +5,10 @@
 // DESIGN : Voir fichier HTML "page confirmation rechargemen.html"
 // ============================================================
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../constantes/couleurs.dart';
 import '../../constantes/dimensions.dart';
@@ -58,10 +61,14 @@ class PageConfirmationRechargement extends StatelessWidget {
                 ],
               ),
             ),
-            const Positioned(
+            Positioned(
               top: Dimensions.espaceL,
               left: Dimensions.espaceXS,
-              child: _BoutonRetourVisuel(),
+              child: _BoutonRetour(
+                onAppui: () {
+                  Navigator.maybePop(context);
+                },
+              ),
             ),
           ],
         ),
@@ -70,29 +77,29 @@ class PageConfirmationRechargement extends StatelessWidget {
   }
 }
 
-class _BoutonRetourVisuel extends StatelessWidget {
-  const _BoutonRetourVisuel();
+class _BoutonRetour extends StatelessWidget {
+  final VoidCallback onAppui;
+
+  const _BoutonRetour({required this.onAppui});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 48,
-      height: 48,
-      decoration: const BoxDecoration(
-        shape: BoxShape.circle,
-        color: Couleurs.iconeGrise,
-        boxShadow: [
-          BoxShadow(
-            color: Color(0x12000000),
-            blurRadius: 8,
-            offset: Offset(0, 2),
+    return Material(
+      color: Couleurs.iconeGrise,
+      shape: const CircleBorder(),
+      elevation: 1,
+      child: InkWell(
+        onTap: onAppui,
+        customBorder: const CircleBorder(),
+        child: const SizedBox(
+          width: 48,
+          height: 48,
+          child: Icon(
+            Icons.arrow_back,
+            color: Couleurs.texte,
+            size: 30,
           ),
-        ],
-      ),
-      child: const Icon(
-        Icons.arrow_back,
-        color: Couleurs.texte,
-        size: 30,
+        ),
       ),
     );
   }
@@ -219,7 +226,7 @@ class _CarteDetailsRechargement extends StatelessWidget {
                 transaction.id,
                 style: _StylesDetails.valeur,
               ),
-              suffixe: const _BoutonCopieVisuel(),
+              suffixe: _BoutonCopie(transactionId: transaction.id),
             ),
           ],
         ),
@@ -324,19 +331,36 @@ class _PastilleSucces extends StatelessWidget {
   }
 }
 
-class _BoutonCopieVisuel extends StatelessWidget {
-  const _BoutonCopieVisuel();
+class _BoutonCopie extends StatelessWidget {
+  final String transactionId;
+
+  const _BoutonCopie({required this.transactionId});
 
   @override
   Widget build(BuildContext context) {
-    return const SizedBox(
-      width: 40,
-      height: 40,
-      child: Icon(
-        Icons.content_copy,
-        color: Couleurs.vertVif,
-        size: 22,
+    return Material(
+      color: Colors.transparent,
+      borderRadius: BorderRadius.circular(10),
+      child: InkWell(
+        onTap: () => _copierTransaction(context),
+        borderRadius: BorderRadius.circular(10),
+        child: const SizedBox(
+          width: 40,
+          height: 40,
+          child: Icon(
+            Icons.content_copy,
+            color: Couleurs.vertVif,
+            size: 22,
+          ),
+        ),
       ),
+    );
+  }
+
+  void _copierTransaction(BuildContext context) {
+    unawaited(Clipboard.setData(ClipboardData(text: transactionId)));
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('ID transaction copié')),
     );
   }
 }

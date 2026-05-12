@@ -146,13 +146,25 @@ class _PageHistoriqueEtat extends State<PageHistorique> {
   }
 
   void _ouvrirTransaction(Transaction transaction) {
-    if (transaction.type != TypeTransaction.repas) return;
-
-    Navigator.pushNamed(
-      context,
-      Routes.detailRepas,
-      arguments: transaction,
-    );
+    switch (transaction.type) {
+      case TypeTransaction.repas:
+        Navigator.pushNamed(
+          context,
+          Routes.detailRepas,
+          arguments: transaction,
+        );
+        return;
+      case TypeTransaction.rechargement:
+        Navigator.pushNamed(
+          context,
+          Routes.confirmationRechargement,
+          arguments: transaction,
+        );
+        return;
+      case TypeTransaction.transfertEnvoye:
+      case TypeTransaction.transfertRecu:
+        return;
+    }
   }
 
   @override
@@ -443,6 +455,11 @@ class _CarteTransaction extends StatelessWidget {
     }
   }
 
+  bool get _estOuvrable {
+    return transaction.type == TypeTransaction.repas ||
+        transaction.type == TypeTransaction.rechargement;
+  }
+
   @override
   Widget build(BuildContext context) {
     final styleMontant = transaction.estPositif
@@ -453,7 +470,7 @@ class _CarteTransaction extends StatelessWidget {
       color: Couleurs.blanc,
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
-        onTap: transaction.type == TypeTransaction.repas ? onAppui : null,
+        onTap: _estOuvrable ? onAppui : null,
         borderRadius: BorderRadius.circular(12),
         child: Container(
           padding: const EdgeInsets.all(Dimensions.espaceM),
