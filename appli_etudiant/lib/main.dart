@@ -18,7 +18,7 @@ class AppFlexFood extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'FlexFood — Bigo',
-      debugShowCheckedModeBanner: true,
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Couleurs.vertPrincipal),
         scaffoldBackgroundColor: Couleurs.fondPrincipal,
@@ -32,7 +32,7 @@ class AppFlexFood extends StatelessWidget {
       initialRoute: Routes.changerCodeSecret,
       //
       // Page Détail Repas → commente initialRoute et décommente home:
-      // home: PageDetailRepas(transaction: TransactionsFictives.transactions[1]),
+      //home: PageDetailRepas(transaction: TransactionsFictives.transactions[1]),
       //
       // ──────────────────────────────────────────────────────
     );
