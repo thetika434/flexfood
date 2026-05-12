@@ -52,8 +52,7 @@ class _PageConnexionEtat extends State<PageConnexion> {
     final matricule = _controleurMatricule.text.trim();
     final codeSecret = _controleurCodeSecret.text.trim();
 
-    final etudiant =
-        ServiceAuthentification.connecter(matricule, codeSecret);
+    final etudiant = ServiceAuthentification.connecter(matricule, codeSecret);
 
     if (etudiant != null) {
       Navigator.pushNamedAndRemoveUntil(
@@ -84,9 +83,9 @@ class _PageConnexionEtat extends State<PageConnexion> {
 
                 const SizedBox(height: Dimensions.espaceL),
 
-                Text('FlexFood', style: StylesTexte.titreMoyen),
+                const Text('FlexFood', style: StylesTexte.titreMoyen),
                 const SizedBox(height: Dimensions.espaceS),
-                Text(
+                const Text(
                   'Bienvenue à l\'ESATIC. Connectez-vous\npour accéder à votre portefeuille étudiant.',
                   style: StylesTexte.corpsSecondaire,
                   textAlign: TextAlign.center,
@@ -111,9 +110,7 @@ class _PageConnexionEtat extends State<PageConnexion> {
                   masquer: !_codeVisible,
                   iconeSuffixe: IconButton(
                     icon: Icon(
-                      _codeVisible
-                          ? Icons.visibility_off
-                          : Icons.visibility,
+                      _codeVisible ? Icons.visibility_off : Icons.visibility,
                       color: Couleurs.texteSecondaire,
                     ),
                     onPressed: () =>
@@ -139,7 +136,7 @@ class _PageConnexionEtat extends State<PageConnexion> {
 
                 const SizedBox(height: Dimensions.espaceM),
 
-                Text('Code secret oublié ?', style: StylesTexte.lien),
+                const Text('Code secret oublié ?', style: StylesTexte.lien),
               ],
             ),
           ),

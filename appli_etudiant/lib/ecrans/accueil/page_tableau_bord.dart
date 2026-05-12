@@ -125,11 +125,12 @@ class _PageTableauBordEtat extends State<PageTableauBord> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Transactions Recentes', style: StylesTexte.titrePetit),
+                  const Text('Transactions Recentes',
+                      style: StylesTexte.titrePetit),
                   GestureDetector(
                     onTap: () =>
                         Navigator.pushNamed(context, Routes.historique),
-                    child: Text('Voir Tout', style: StylesTexte.lien),
+                    child: const Text('Voir Tout', style: StylesTexte.lien),
                   ),
                 ],
               ),

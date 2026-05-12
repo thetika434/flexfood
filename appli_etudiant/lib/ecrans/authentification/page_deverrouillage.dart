@@ -102,9 +102,9 @@ class _PageDeverrouillageEtat extends State<PageDeverrouillage> {
 
             const SizedBox(height: Dimensions.espaceL),
 
-            Text('Déverrouillage', style: StylesTexte.titreMoyen),
+            const Text('Déverrouillage', style: StylesTexte.titreMoyen),
             const SizedBox(height: Dimensions.espaceS),
-            Text(
+            const Text(
               'Votre code secret est requis pour déverrouiller\nl\'accès à votre portefeuille',
               style: StylesTexte.corpsSecondaire,
               textAlign: TextAlign.center,
@@ -131,7 +131,7 @@ class _PageDeverrouillageEtat extends State<PageDeverrouillage> {
             ),
 
             const SizedBox(height: Dimensions.espaceM),
-            Text('Code oublié ?', style: StylesTexte.lien),
+            const Text('Code oublié ?', style: StylesTexte.lien),
             const SizedBox(height: Dimensions.espaceL),
           ],
         ),
