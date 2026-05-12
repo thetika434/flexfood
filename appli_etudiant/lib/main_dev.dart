@@ -30,7 +30,7 @@ import 'services/service_authentification.dart';
 // NABO — décommente ce dont tu as besoin :
 // import 'ecrans/transfert/page_choisir_mode_transfert.dart';
 // import 'ecrans/transfert/page_saisir_matricule.dart';
-// import 'ecrans/transfert/page_scanner_qr.dart';
+import 'ecrans/transfert/page_scanner_qr.dart';
 
 // MOÏSE — décommente ce dont tu as besoin :
 // import 'ecrans/transfert/page_montant_transfert.dart';
@@ -83,7 +83,7 @@ class AppFlexFoodDev extends StatelessWidget {
       //
       // ─────────────────────────────────────────────────────
 
-      home: const _EcranChoisirDeveloppeur(),
+      home: const PageScannerQR(),
     );
   }
 }

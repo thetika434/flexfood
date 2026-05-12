@@ -14,6 +14,8 @@
 	<string>6.0</string>
 	<key>CFBundleName</key>
 	<string>appli_etudiant</string>
+	<key>NSCameraUsageDescription</key>
+	<string>FlexFood utilise la camera pour scanner le QR code du destinataire.</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>

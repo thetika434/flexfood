@@ -22,7 +22,7 @@ class AppFlexFood extends StatelessWidget {
         scaffoldBackgroundColor: Couleurs.fondPrincipal,
         useMaterial3: true,
       ),
-      initialRoute: Routes.accueil,
+      initialRoute: Routes.choisirModeTransfert,
       routes: Routes.obtenirRoutes(),
     );
   }
