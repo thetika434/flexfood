@@ -1,0 +1,60 @@
+generator client {
+  provider = "./dart_wrapper.sh run orm"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  
+
+}
+
+model Etudiant {
+  id           Int           @id @default(autoincrement())
+  matricule    String        @unique @db.VarChar(20)
+  nom          String        @db.VarChar(50)
+  prenom       String        @db.VarChar(50)
+  solde        Int           @default(0)
+  codeSecret   String        @map("code_secret") @db.VarChar(100)
+  codeQr       String        @unique @map("code_qr") @db.VarChar(100)
+  transactions Transaction[]
+  sessions     Session[]
+
+
+  @@map("etudiants")
+}
+
+model Transaction {
+  id                   String    @id @db.VarChar(10)
+  type                 String    @db.VarChar(30)
+  montant              Int
+  dateHeure            DateTime  @default(now()) @map("date_heure")
+  etudiantId           Int       @map("etudiant_id")
+  autrePartiMatricule  String?   @map("autre_parti_matricule") @db.VarChar(20)
+  service              String?   @db.VarChar(10)
+  etudiant             Etudiant  @relation(fields: [etudiantId], references: [id])
+
+  @@map("transactions")
+}
+
+model Session {
+  id             Int      @id @default(autoincrement())
+  etudiantId     Int      @map("etudiant_id")
+  token          String
+  dateExpiration DateTime @map("date_expiration")
+  etudiant       Etudiant @relation(fields: [etudiantId], references: [id])
+
+  @@map("sessions")
+}
+
+model Agent {
+  id         Int    @id @default(autoincrement())
+  matricule  String @unique @db.VarChar(20)
+  nom        String @db.VarChar(50)
+  prenom     String @db.VarChar(50)
+  codeSecret String @map("code_secret") @db.VarChar(100)
+  poste      String? @db.VarChar(50)
+
+  @@map("agents")
+}

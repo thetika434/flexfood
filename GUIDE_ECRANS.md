@@ -98,7 +98,7 @@ String _messageErreur = '';
 
 ---
 
-## 2. DAVID — Page Confirmation Rechargement
+  ## 2. DAVID — Page Confirmation Rechargement
 
 **Fichier :** `lib/ecrans/confirmations/page_confirmation_rechargement.dart`
 **Reçoit :** `final Transaction transaction;` (dans le constructeur)
@@ -139,7 +139,7 @@ import '../../navigation/routeur.dart';
 ```dart
 transaction.id          // "#4501"
 transaction.montant     // 5000
-transaction.dateHeure   // DateTime
+transaction.dateHeure   // DateTime` v vtv   0mnbl[y ]
 Formateur.formaterDate(transaction.dateHeure)  // "Aujourd'hui, 09:12"
 Formateur.formaterMontantTransaction(transaction.montant) // "+5 000 FCFA"
 ```
