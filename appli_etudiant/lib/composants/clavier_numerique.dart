@@ -16,7 +16,7 @@ class ClavierNumerique extends StatelessWidget {
 
   Widget _touche(Widget enfant, VoidCallback onAppui) {
     return Expanded(
-      child: GestureDetector(
+      child: InkWell(
         onTap: onAppui,
         child: Container(
           height: 70,

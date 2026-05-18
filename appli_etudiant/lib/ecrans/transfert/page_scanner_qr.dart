@@ -20,11 +20,12 @@ class _PageScannerQREtat extends State<PageScannerQR> {
     final code = capture.barcodes.firstOrNull?.rawValue;
     if (code == null || !code.startsWith('FLEXFOOD-')) return;
 
-    // Format : FLEXFOOD-21-ESATIC-0045-a1b2c3d4
-    // Extraire matricule : parties[1]-parties[2]-parties[3]
-    final parties = code.split('-');
-    if (parties.length < 4) return;
-    final matricule = '${parties[1]}-${parties[2]}-${parties[3]}';
+    // Format : FLEXFOOD-{matricule}-{timestamp}
+    // Le timestamp est toujours le dernier segment après le dernier tiret
+    final sansPrefix = code.substring('FLEXFOOD-'.length);
+    final dernierTiret = sansPrefix.lastIndexOf('-');
+    if (dernierTiret == -1) return;
+    final matricule = sansPrefix.substring(0, dernierTiret);
 
     setState(() => _traite = true);
     _naviguerVersTransfert(matricule);

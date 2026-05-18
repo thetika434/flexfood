@@ -24,14 +24,8 @@ void main() async {
   final mw = authMiddleware();
   final routeurPrincipal = Router();
 
-  // Route publique (sans token)
-  routeurPrincipal.post('/auth/connexion', authRoutes(serviceAuth).call);
-
-  // Routes auth protégées (verifier-pin, changer-code)
-  routeurPrincipal.mount(
-    '/auth/',
-    Pipeline().addMiddleware(mw).addHandler(authRoutes(serviceAuth).call),
-  );
+  // Routes auth (connexion publique, verifier-pin et changer-code gèrent leur token eux-mêmes)
+  routeurPrincipal.mount('/auth/', authRoutes(serviceAuth).call);
 
   // Routes protégées
   routeurPrincipal.mount(
@@ -47,7 +41,6 @@ void main() async {
     ),
   );
 
-  // Middleware global : logs
   final pipeline = Pipeline()
       .addMiddleware(logRequests())
       .addHandler(routeurPrincipal.call);

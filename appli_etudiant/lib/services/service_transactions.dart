@@ -79,10 +79,7 @@ class ServiceTransactions {
     if (reponse.statusCode != 200) throw Exception('Erreur serveur');
 
     final data = jsonDecode(reponse.body) as Map<String, dynamic>;
-
-    // Rafraîchir le solde local après transfert réussi
-    await _rafraichirSolde();
-
+    _rafraichirSolde(); // fire-and-forget, le tableau de bord actualise à son retour
     return Transaction.fromJson(data);
   }
 
