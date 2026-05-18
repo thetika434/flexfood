@@ -1,61 +1,105 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import '../modeles/etudiant.dart';
 import '../modeles/transaction.dart';
 import '../modeles/favori.dart';
-import '../donnees_fictives/etudiants_fictifs.dart';
-import '../donnees_fictives/transactions_fictives.dart';
+import '../config.dart';
 import 'service_authentification.dart';
+import 'service_stockage_local.dart';
 
 class ServiceTransactions {
   ServiceTransactions._();
 
-  static List<Transaction> obtenirTransactions() {
-    return List.from(TransactionsFictives.transactions);
+  static Future<Map<String, String>> _entetes() async {
+    final token = await ServiceStockageLocal.recupererToken();
+    return {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ${token ?? ''}',
+    };
   }
 
-  static List<Transaction> obtenirDernieresTransactions({int nombre = 4}) {
-    final liste = obtenirTransactions();
-    liste.sort((a, b) => b.dateHeure.compareTo(a.dateHeure));
+  static Future<List<Transaction>> obtenirTransactions() async {
+    final reponse = await http.get(
+      Uri.parse('${Config.urlBackend}/transactions/'),
+      headers: await _entetes(),
+    );
+
+    if (reponse.statusCode != 200) return [];
+    final liste = jsonDecode(reponse.body) as List;
+    return liste
+        .map((j) => Transaction.fromJson(j as Map<String, dynamic>))
+        .toList();
+  }
+
+  static Future<List<Transaction>> obtenirDernieresTransactions(
+      {int nombre = 4}) async {
+    final liste = await obtenirTransactions();
     return liste.take(nombre).toList();
   }
 
-  static List<Favori> obtenirFavoris() {
-    return List.from(TransactionsFictives.favoris);
-  }
+  // Les favoris ne sont pas encore dans le backend
+  static List<Favori> obtenirFavoris() => [];
 
-  static Etudiant? chercherEtudiantParMatricule(String matricule) {
-    return EtudiantsFictifs.chercherParMatricule(matricule);
-  }
-
-  // Retourne null si le transfert échoue, sinon retourne la transaction créée
-  static Transaction? effectuerTransfert(
-      String matriculeDestinataire, int montant) {
-    final expediteur = Session.etudiantConnecte;
-    if (expediteur == null) return null;
-
-    // Vérifications règles métier
-    if (montant <= 0) return null;
-    if (montant % 100 != 0) return null;
-    if (expediteur.solde < montant) return null;
-    if (matriculeDestinataire == expediteur.matricule) return null;
-
-    final destinataire =
-        EtudiantsFictifs.chercherParMatricule(matriculeDestinataire);
-    if (destinataire == null) return null;
-
-    // Mise à jour des soldes (atomique)
-    expediteur.solde -= montant;
-    destinataire.solde += montant;
-
-    final transaction = Transaction(
-      id: '#${(DateTime.now().millisecondsSinceEpoch % 9000) + 1000}',
-      type: TypeTransaction.transfertEnvoye,
-      montant: -montant,
-      dateHeure: DateTime.now(),
-      autrePartiNom: destinataire.prenom,
-      autrePartiMatricule: destinataire.matricule,
+  static Future<Etudiant?> chercherEtudiantParMatricule(
+      String matricule) async {
+    final reponse = await http.get(
+      Uri.parse('${Config.urlBackend}/etudiants/$matricule'),
+      headers: await _entetes(),
     );
 
-    TransactionsFictives.transactions.insert(0, transaction);
-    return transaction;
+    if (reponse.statusCode != 200) return null;
+
+    final data = jsonDecode(reponse.body) as Map<String, dynamic>;
+    return Etudiant(
+      matricule: data['matricule'] as String,
+      nom: data['nom'] as String,
+      prenom: data['prenom'] as String,
+      solde: 0,
+      codeQR: '',
+    );
   }
+
+  // Lance une exception si solde insuffisant ou autre erreur
+  static Future<Transaction> effectuerTransfert(
+      String matriculeDestinataire, int montant) async {
+    final reponse = await http.post(
+      Uri.parse('${Config.urlBackend}/transactions/transfert'),
+      headers: await _entetes(),
+      body: jsonEncode({
+        'matricule_destinataire': matriculeDestinataire,
+        'montant': montant,
+      }),
+    );
+
+    if (reponse.statusCode == 422) throw Exception('Solde insuffisant');
+    if (reponse.statusCode == 400) {
+      final data = jsonDecode(reponse.body) as Map<String, dynamic>;
+      throw Exception(data['erreur'] ?? 'Montant invalide');
+    }
+    if (reponse.statusCode != 200) throw Exception('Erreur serveur');
+
+    final data = jsonDecode(reponse.body) as Map<String, dynamic>;
+
+    // Rafraîchir le solde local après transfert réussi
+    await _rafraichirSolde();
+
+    return Transaction.fromJson(data);
+  }
+
+  static Future<void> _rafraichirSolde() async {
+    final reponse = await http.get(
+      Uri.parse('${Config.urlBackend}/etudiants/moi'),
+      headers: await _entetes(),
+    );
+
+    if (reponse.statusCode == 200) {
+      final data = jsonDecode(reponse.body) as Map<String, dynamic>;
+      final nouveauSolde = data['solde'] as int;
+      Session.etudiantConnecte?.solde = nouveauSolde;
+      await ServiceStockageLocal.sauvegarderEtudiantJson(jsonEncode(data));
+    }
+  }
+
+  // Appelé au chargement du tableau de bord pour avoir le solde à jour
+  static Future<void> rafraichirEtudiant() => _rafraichirSolde();
 }

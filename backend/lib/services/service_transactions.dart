@@ -17,18 +17,35 @@ class ServiceTransactions {
       ),
     );
 
-    return transactions
-        .map(
-          (t) => {
-            'id': t.id,
-            'type': t.type,
-            'montant': t.montant,
-            'dateHeure': t.dateHeure?.toIso8601String(),
-            'autrePartiMatricule': t.autrePartiMatricule,
-            'service': t.service,
-          },
-        )
-        .toList();
+    // Cache matricule → "Prénom Nom" pour éviter des requêtes en double
+    final Map<String, String> cacheNoms = {};
+
+    final result = <Map<String, dynamic>>[];
+    for (final t in transactions) {
+      String? autrePartiNom;
+      if (t.autrePartiMatricule != null) {
+        if (!cacheNoms.containsKey(t.autrePartiMatricule)) {
+          final autre = await _prisma.etudiant.findUnique(
+            where: EtudiantWhereUniqueInput(matricule: t.autrePartiMatricule),
+          );
+          if (autre != null) {
+            cacheNoms[t.autrePartiMatricule!] =
+                '${autre.prenom} ${autre.nom}';
+          }
+        }
+        autrePartiNom = cacheNoms[t.autrePartiMatricule];
+      }
+      result.add({
+        'id': t.id,
+        'type': t.type,
+        'montant': t.montant,
+        'dateHeure': t.dateHeure?.toIso8601String(),
+        'autrePartiMatricule': t.autrePartiMatricule,
+        'autrePartiNom': autrePartiNom,
+        'service': t.service,
+      });
+    }
+    return result;
   }
 
   Future<Map<String, dynamic>> effectuerTransfert(
@@ -111,6 +128,7 @@ class ServiceTransactions {
       'montant': -montant,
       'dateHeure': maintenant.toIso8601String(),
       'autrePartiMatricule': matriculeDestinataire,
+      'autrePartiNom': '${destinataire.prenom} ${destinataire.nom}',
     };
   }
 

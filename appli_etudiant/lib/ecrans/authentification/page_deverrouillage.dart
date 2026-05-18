@@ -43,9 +43,10 @@ class _PageDeverrouillageEtat extends State<PageDeverrouillage> {
   String _pin = '';
   int _nbErreurs = 0;
   String? _messageErreur;
+  bool _verification = false;
 
   void _ajouterChiffre(String chiffre) {
-    if (_pin.length >= 4) return;
+    if (_pin.length >= 4 || _verification) return;
     setState(() {
       _pin += chiffre;
       _messageErreur = null;
@@ -54,26 +55,46 @@ class _PageDeverrouillageEtat extends State<PageDeverrouillage> {
   }
 
   void _effacerDernier() {
-    if (_pin.isEmpty) return;
+    if (_pin.isEmpty || _verification) return;
     setState(() => _pin = _pin.substring(0, _pin.length - 1));
   }
 
-  void _verifierPin() {
-    final correct = ServiceAuthentification.verifierPin(_pin);
-    if (correct) {
-      Navigator.pushNamedAndRemoveUntil(
-        context,
-        Routes.accueil,
-        (route) => false,
-      );
-    } else {
-      setState(() {
-        _nbErreurs++;
-        _pin = '';
-        _messageErreur = _nbErreurs >= 3
-            ? 'Trop de tentatives. Réessayez dans 5 minutes.'
-            : 'Code incorrect. Tentative $_nbErreurs/3';
-      });
+  Future<void> _verifierPin() async {
+    setState(() => _verification = true);
+    try {
+      final correct = await ServiceAuthentification.verifierPin(_pin);
+      if (!mounted) return;
+      if (correct) {
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          Routes.accueil,
+          (route) => false,
+        );
+      } else {
+        setState(() {
+          _nbErreurs++;
+          _pin = '';
+          _verification = false;
+          _messageErreur = _nbErreurs >= 3
+              ? 'Trop de tentatives. Réessayez dans 5 minutes.'
+              : 'Code incorrect. Tentative $_nbErreurs/3';
+        });
+      }
+    } catch (e) {
+      if (!mounted) return;
+      final message = e.toString();
+      // Session expirée → retour connexion
+      if (message.contains('expirée') || message.contains('401')) {
+        Navigator.pushNamedAndRemoveUntil(
+            context, Routes.connexion, (route) => false);
+      } else {
+        // Erreur réseau → afficher message sans rediriger
+        setState(() {
+          _pin = '';
+          _verification = false;
+          _messageErreur = 'Impossible de contacter le serveur';
+        });
+      }
     }
   }
 
@@ -113,6 +134,15 @@ class _PageDeverrouillageEtat extends State<PageDeverrouillage> {
             const SizedBox(height: Dimensions.espaceL),
 
             IndicateurPin(longueur: _pin.length),
+
+            if (_verification) ...[
+              const SizedBox(height: Dimensions.espaceS),
+              const SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            ],
 
             if (_messageErreur != null) ...[
               const SizedBox(height: Dimensions.espaceS),

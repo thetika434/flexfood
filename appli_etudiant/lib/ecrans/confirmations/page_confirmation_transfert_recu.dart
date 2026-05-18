@@ -1,27 +1,14 @@
-// ============================================================
-// DÉVELOPPEUR : Moïse
-// ÉCRAN       : Page Confirmation Transfert Reçu
-// ============================================================
-// DESIGN : Voir image "confirmation_transfert_recu.png"
-//
-// IMPORTS À AJOUTER quand tu commences :
-//   import '../../constantes/couleurs.dart';
-//   import '../../constantes/dimensions.dart';
-//   import '../../constantes/styles_texte.dart';
-//   import '../../composants/carte_detail_transaction.dart';
-//   import '../../composants/ligne_detail.dart';
-//   import '../../composants/pastille_statut.dart';
-//   import '../../composants/avatar_utilisateur.dart';
-//   import '../../modeles/transaction.dart';
-//   import '../../utilitaires/formateur.dart';
-//
-// CET ÉCRAN REÇOIT une Transaction en argument :
-//   final Transaction transaction; (dans le constructeur)
-//   → transaction.autrePartiNom / transaction.montant / transaction.dateHeure / transaction.id
-// ============================================================
-
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import '../../constantes/couleurs.dart';
+import '../../constantes/dimensions.dart';
+import '../../constantes/styles_texte.dart';
+import '../../composants/carte_detail_transaction.dart';
+import '../../composants/ligne_detail.dart';
+import '../../composants/pastille_statut.dart';
+import '../../composants/avatar_utilisateur.dart';
 import '../../modeles/transaction.dart';
+import '../../utilitaires/formateur.dart';
 
 class PageConfirmationTransfertRecu extends StatelessWidget {
   final Transaction transaction;
@@ -30,9 +17,110 @@ class PageConfirmationTransfertRecu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Text('Page Confirmation Transfert Reçu — À implémenter par David'),
+    return Scaffold(
+      backgroundColor: Couleurs.fondPrincipal,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Container(
+            decoration: const BoxDecoration(
+              color: Couleurs.blanc,
+              shape: BoxShape.circle,
+            ),
+            child: IconButton(
+              icon: const Icon(Icons.arrow_back, color: Couleurs.texte, size: 20),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ),
+        ),
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(Dimensions.paddingPage),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const SizedBox(height: Dimensions.espaceL),
+
+              // Avatar de l'expéditeur
+              AvatarUtilisateur(
+                taille: Dimensions.tailleAvatarGrand,
+                initiales: transaction.autrePartiNom != null
+                    ? transaction.autrePartiNom![0].toUpperCase()
+                    : '?',
+                couleurFond: Couleurs.fondIconeTransfertRecu,
+              ),
+              const SizedBox(height: Dimensions.espaceM),
+
+              Text('Transfert reçu',
+                  style: StylesTexte.titreGrand
+                      .copyWith(color: Couleurs.vertFonce)),
+              const SizedBox(height: Dimensions.espaceS),
+
+              Text(
+                Formateur.formaterMontantTransaction(transaction.montant),
+                style: const TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.w900,
+                  color: Couleurs.texte,
+                  letterSpacing: -1,
+                ),
+              ),
+              const SizedBox(height: Dimensions.espaceXL),
+
+              CarteDetailTransaction(
+                lignes: [
+                  LigneDetail(
+                    icone: Icons.person_outline,
+                    label: 'EXPÉDITEUR',
+                    valeur: Text(
+                      transaction.autrePartiNom ??
+                          transaction.autrePartiMatricule ??
+                          '—',
+                      style: StylesTexte.corps,
+                    ),
+                  ),
+                  LigneDetail(
+                    icone: Icons.access_time,
+                    label: 'DATE & HEURE',
+                    valeur: Text(
+                      Formateur.formaterDate(transaction.dateHeure),
+                      style: StylesTexte.corps,
+                    ),
+                  ),
+                  const LigneDetail(
+                    icone: Icons.check_circle_outline,
+                    label: 'STATUT',
+                    valeur: PastilleStatut(texte: 'Reçu', succes: true),
+                  ),
+                  LigneDetail(
+                    icone: Icons.label_outline,
+                    label: 'ID TRANSACTION',
+                    valeur:
+                        Text(transaction.id, style: StylesTexte.corps),
+                    suffixe: IconButton(
+                      icon: const Icon(Icons.content_copy,
+                          color: Couleurs.vertPrincipal, size: 20),
+                      onPressed: () {
+                        Clipboard.setData(ClipboardData(text: transaction.id));
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text('ID copié dans le presse-papier')),
+                        );
+                      },
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                    ),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: Dimensions.espaceXL),
+            ],
+          ),
+        ),
       ),
     );
   }

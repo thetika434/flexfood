@@ -1,5 +1,3 @@
-
-
 import 'dart:io';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as io;
@@ -23,13 +21,19 @@ void main() async {
   final serviceEtudiants = ServiceEtudiants(prisma);
   final serviceTransactions = ServiceTransactions(prisma);
 
+  final mw = authMiddleware();
   final routeurPrincipal = Router();
 
-  // Routes publiques (sans token)
-  routeurPrincipal.mount('/auth/', authRoutes(serviceAuth).call);
+  // Route publique (sans token)
+  routeurPrincipal.post('/auth/connexion', authRoutes(serviceAuth).call);
 
-  // Routes protégées (avec token JWT)
-  final mw = authMiddleware();
+  // Routes auth protégées (verifier-pin, changer-code)
+  routeurPrincipal.mount(
+    '/auth/',
+    Pipeline().addMiddleware(mw).addHandler(authRoutes(serviceAuth).call),
+  );
+
+  // Routes protégées
   routeurPrincipal.mount(
     '/etudiants/',
     Pipeline().addMiddleware(mw).addHandler(

@@ -45,7 +45,7 @@ class _PageChangerCodeSecretState extends State<PageChangerCodeSecret> {
     super.dispose();
   }
 
-  void _validerChangement() {
+  Future<void> _validerChangement() async {
     final ancien = _ancienCodeController.text;
     final nouveau = _nouveauCodeController.text;
     final confirmer = _confirmerCodeController.text;
@@ -57,8 +57,10 @@ class _PageChangerCodeSecretState extends State<PageChangerCodeSecret> {
       return;
     }
 
-    bool succes =
-        ServiceAuthentification.changerCodeSecret(ancien, nouveau, confirmer);
+    final succes = await ServiceAuthentification.changerCodeSecret(
+        ancien, nouveau, confirmer);
+
+    if (!mounted) return;
 
     if (succes) {
       ScaffoldMessenger.of(context).showSnackBar(

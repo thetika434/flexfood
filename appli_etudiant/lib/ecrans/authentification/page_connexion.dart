@@ -39,6 +39,7 @@ class _PageConnexionEtat extends State<PageConnexion> {
   final _controleurMatricule = TextEditingController();
   final _controleurCodeSecret = TextEditingController();
   bool _codeVisible = false;
+  bool _chargement = false;
   String? _messageErreur;
 
   @override
@@ -48,22 +49,27 @@ class _PageConnexionEtat extends State<PageConnexion> {
     super.dispose();
   }
 
-  void _seConnecter() {
+  Future<void> _seConnecter() async {
     final matricule = _controleurMatricule.text.trim();
     final codeSecret = _controleurCodeSecret.text.trim();
 
-    final etudiant =
-        ServiceAuthentification.connecter(matricule, codeSecret);
+    setState(() {
+      _chargement = true;
+      _messageErreur = null;
+    });
 
-    if (etudiant != null) {
+    try {
+      await ServiceAuthentification.connecter(matricule, codeSecret);
+      if (!mounted) return;
       Navigator.pushNamedAndRemoveUntil(
         context,
         Routes.accueil,
         (route) => false,
       );
-    } else {
+    } catch (e) {
       setState(() {
-        _messageErreur = 'Matricule ou code secret incorrect.';
+        _messageErreur = e.toString().replaceFirst('Exception: ', '');
+        _chargement = false;
       });
     }
   }
@@ -133,8 +139,8 @@ class _PageConnexionEtat extends State<PageConnexion> {
                 const SizedBox(height: Dimensions.espaceXL),
 
                 BoutonPrincipal(
-                  texte: 'Se connecter',
-                  onAppui: _seConnecter,
+                  texte: _chargement ? 'Connexion...' : 'Se connecter',
+                  onAppui: _chargement ? () {} : _seConnecter,
                 ),
 
                 const SizedBox(height: Dimensions.espaceM),

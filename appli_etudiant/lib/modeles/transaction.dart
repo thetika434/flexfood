@@ -30,6 +30,33 @@ class Transaction {
     this.service,
   });
 
+  factory Transaction.fromJson(Map<String, dynamic> json) {
+    final matricule = json['autrePartiMatricule'] as String?;
+    return Transaction(
+      id: json['id'] as String,
+      type: _parseType(json['type'] as String),
+      montant: json['montant'] as int,
+      dateHeure: DateTime.parse(json['dateHeure'] as String),
+      autrePartiNom: json['autrePartiNom'] as String? ?? matricule,
+      autrePartiMatricule: matricule,
+      service: _parseService(json['service'] as String?),
+    );
+  }
+
+  static TypeTransaction _parseType(String t) => switch (t) {
+        'transfert_envoye' => TypeTransaction.transfertEnvoye,
+        'transfert_recu' => TypeTransaction.transfertRecu,
+        'rechargement' => TypeTransaction.rechargement,
+        _ => TypeTransaction.repas,
+      };
+
+  static ServiceRepas? _parseService(String? s) => switch (s) {
+        'matin' => ServiceRepas.matin,
+        'midi' => ServiceRepas.midi,
+        'soir' => ServiceRepas.soir,
+        _ => null,
+      };
+
   bool get estPositif => montant > 0;
 
   String get titre {

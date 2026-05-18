@@ -15,6 +15,22 @@ class Etudiant {
     this.premiereConnexion = false,
   });
 
+  factory Etudiant.fromJson(Map<String, dynamic> json) => Etudiant(
+        matricule: json['matricule'] as String,
+        nom: json['nom'] as String,
+        prenom: json['prenom'] as String,
+        solde: json['solde'] as int,
+        codeQR: json['codeQr'] as String? ?? '',
+      );
+
+  Map<String, dynamic> toJson() => {
+        'matricule': matricule,
+        'nom': nom,
+        'prenom': prenom,
+        'solde': solde,
+        'codeQr': codeQR,
+      };
+
   String get nomComplet => '$prenom $nom';
 
   String get initiales {

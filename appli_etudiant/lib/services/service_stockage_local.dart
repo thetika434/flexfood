@@ -6,6 +6,8 @@ class ServiceStockageLocal {
   static const String _cleSolde = 'solde';
   static const String _cleQR = 'code_qr';
   static const String _cleMatricule = 'matricule';
+  static const String _cleToken = 'jwt_token';
+  static const String _cleEtudiantJson = 'etudiant_json';
 
   static Future<void> sauvegarderSolde(int solde) async {
     final prefs = await SharedPreferences.getInstance();
@@ -35,6 +37,26 @@ class ServiceStockageLocal {
   static Future<String?> recupererMatricule() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_cleMatricule);
+  }
+
+  static Future<void> sauvegarderToken(String token) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_cleToken, token);
+  }
+
+  static Future<String?> recupererToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_cleToken);
+  }
+
+  static Future<void> sauvegarderEtudiantJson(String json) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_cleEtudiantJson, json);
+  }
+
+  static Future<String?> recupererEtudiantJson() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_cleEtudiantJson);
   }
 
   static Future<void> toutEffacer() async {
