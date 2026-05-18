@@ -57,7 +57,7 @@ class _PageScannerQREtat extends State<PageScannerQR> {
           ),
           _BoutonIconeAppBar(
             icone: Icons.cameraswitch,
-            libelle: 'Changer caméra',
+            libelle: 'Changer camera',
             onAppui: () => _controleur.switchCamera(),
           ),
           const SizedBox(width: Dimensions.espaceS),
@@ -105,7 +105,7 @@ class _PageScannerQREtat extends State<PageScannerQR> {
                             const _ChargementCamera(),
                         errorBuilder: (context, erreur, _) => _ErreurCamera(
                           message: erreur.errorDetails?.message ??
-                              'Caméra indisponible pour le moment.',
+                              'Camera indisponible pour le moment.',
                         ),
                       ),
                       const _CadreScanner(),
@@ -220,44 +220,6 @@ class _CadreScanner extends StatelessWidget {
   }
 }
 
-class _ChargementCamera extends StatelessWidget {
-  const _ChargementCamera();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: CircularProgressIndicator(color: Couleurs.blanc),
-    );
-  }
-}
-
-class _ErreurCamera extends StatelessWidget {
-  final String message;
-  const _ErreurCamera({required this.message});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(Dimensions.paddingPage),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.camera_alt_outlined,
-                color: Couleurs.blanc, size: 48),
-            const SizedBox(height: Dimensions.espaceM),
-            Text(
-              message,
-              style: StylesTexte.corps.copyWith(color: Couleurs.blanc),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 class _BoutonIconeAppBar extends StatelessWidget {
   final IconData icone;
   final String libelle;
@@ -271,10 +233,83 @@ class _BoutonIconeAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return IconButton(
-      icon: Icon(icone, color: Couleurs.vertFonce),
-      tooltip: libelle,
-      onPressed: onAppui,
+    return Semantics(
+      button: true,
+      label: libelle,
+      child: IconButton(
+        tooltip: libelle,
+        onPressed: onAppui,
+        icon: Icon(icone, color: Couleurs.vertFonce),
+      ),
+    );
+  }
+}
+
+class _ChargementCamera extends StatelessWidget {
+  const _ChargementCamera();
+
+  @override
+  Widget build(BuildContext context) {
+    return ColoredBox(
+      color: Colors.black,
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const CircularProgressIndicator(color: Couleurs.blanc),
+            const SizedBox(height: Dimensions.espaceM),
+            Text(
+              'Demarrage de la camera...',
+              style: StylesTexte.corps.copyWith(color: Couleurs.blanc),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ErreurCamera extends StatelessWidget {
+  final String message;
+
+  const _ErreurCamera({required this.message});
+
+  @override
+  Widget build(BuildContext context) {
+    return ColoredBox(
+      color: Colors.black,
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(Dimensions.paddingPage),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.no_photography_outlined,
+                color: Couleurs.blanc,
+                size: 48,
+              ),
+              const SizedBox(height: Dimensions.espaceM),
+              Text(
+                message,
+                textAlign: TextAlign.center,
+                style: StylesTexte.corps.copyWith(color: Couleurs.blanc),
+              ),
+              const SizedBox(height: Dimensions.espaceL),
+              OutlinedButton.icon(
+                onPressed: () =>
+                    Navigator.pushNamed(context, Routes.saisirMatricule),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: Couleurs.blanc,
+                  side: const BorderSide(color: Couleurs.blanc),
+                ),
+                icon: const Icon(Icons.badge_outlined),
+                label: const Text('Saisir le matricule'),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
