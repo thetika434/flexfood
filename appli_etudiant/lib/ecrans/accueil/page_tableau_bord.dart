@@ -79,7 +79,11 @@ class _PageTableauBordEtat extends State<PageTableauBord> {
     return Scaffold(
       backgroundColor: Couleurs.fondPrincipal,
       body: SafeArea(
-        child: SingleChildScrollView(
+        child: RefreshIndicator(
+          onRefresh: _charger,
+          color: Couleurs.vertPrincipal,
+          child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
           padding: const EdgeInsets.all(Dimensions.paddingPage),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -234,6 +238,7 @@ class _PageTableauBordEtat extends State<PageTableauBord> {
               const SizedBox(height: Dimensions.espaceL),
             ],
           ),
+        ),
         ),
       ),
     );

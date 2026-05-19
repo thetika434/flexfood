@@ -60,9 +60,10 @@ class _PageMontantTransfertEtat extends State<PageMontantTransfert> {
         _montant,
       );
       if (!mounted) return;
-      Navigator.pushNamed(
+      Navigator.pushNamedAndRemoveUntil(
         context,
         Routes.confirmationTransfertEnvoye,
+        (route) => route.settings.name == Routes.accueil,
         arguments: transaction,
       );
     } catch (e) {
