@@ -32,7 +32,7 @@ model Transaction {
   dateHeure            DateTime  @default(now()) @map("date_heure")
   etudiantId           Int       @map("etudiant_id")
   autrePartiMatricule  String?   @map("autre_parti_matricule") @db.VarChar(20)
-  service              String?   @db.VarChar(10)
+  service              String?   @db.VarChar(20)
   etudiant             Etudiant  @relation(fields: [etudiantId], references: [id])
 
   @@map("transactions")

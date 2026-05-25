@@ -12,8 +12,24 @@ import 'package:backend/routes/auth_routes.dart';
 import 'package:backend/routes/etudiant_routes.dart';
 import 'package:backend/routes/transaction_routes.dart';
 import 'package:backend/routes/agent_routes.dart';
+import 'package:backend/routes/admin_routes.dart';
 import 'package:backend/middlewares/auth_middleware.dart';
 import 'package:backend/middlewares/agent_middleware.dart';
+
+Middleware _corsMiddleware() {
+  const headers = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+  };
+  return (Handler handler) => (Request req) async {
+    if (req.method == 'OPTIONS') {
+      return Response.ok('', headers: headers);
+    }
+    final res = await handler(req);
+    return res.change(headers: headers);
+  };
+}
 
 void main() async {
   final prisma = PrismaClient(
@@ -30,6 +46,30 @@ void main() async {
   final mwAgent = agentMiddleware();
   final routeurPrincipal = Router();
 
+  // Route admin connexion (publique)
+  routeurPrincipal.post('/admin/connexion', (Request req) async {
+    final corps = jsonDecode(await req.readAsString()) as Map<String, dynamic>;
+    final login = corps['login'] as String?;
+    final mdp = corps['mot_de_passe'] as String?;
+    if (login == 'admin' && mdp == '1234') {
+      return Response.ok(
+        jsonEncode({'token': 'flexfood-admin-secret-2024'}),
+        headers: {'content-type': 'application/json'},
+      );
+    }
+    return Response(401,
+        body: jsonEncode({'erreur': 'Identifiants incorrects'}),
+        headers: {'content-type': 'application/json'});
+  });
+
+  // Routes admin protégées
+  routeurPrincipal.mount(
+    '/admin/',
+    Pipeline()
+        .addMiddleware(adminMiddleware())
+        .addHandler(adminRoutes(prisma).call),
+  );
+
   // Routes auth étudiants (publiques)
   routeurPrincipal.mount('/auth/', authRoutes(serviceAuth).call);
 
@@ -38,44 +78,51 @@ void main() async {
     final corps = jsonDecode(await req.readAsString()) as Map<String, dynamic>;
     final codeSecret = corps['code_secret'] as String?;
     if (codeSecret == null) {
-      return Response(400,
-          body: jsonEncode({'erreur': 'code_secret requis'}),
-          headers: {'content-type': 'application/json'});
+      return Response(
+        400,
+        body: jsonEncode({'erreur': 'code_secret requis'}),
+        headers: {'content-type': 'application/json'},
+      );
     }
     final resultat = await serviceAgentSvc.connexion(codeSecret);
     if (resultat == null) {
-      return Response(401,
-          body: jsonEncode({'erreur': 'Code secret incorrect'}),
-          headers: {'content-type': 'application/json'});
+      return Response(
+        401,
+        body: jsonEncode({'erreur': 'Code secret incorrect'}),
+        headers: {'content-type': 'application/json'},
+      );
     }
-    return Response.ok(jsonEncode(resultat),
-        headers: {'content-type': 'application/json'});
+    return Response.ok(
+      jsonEncode(resultat),
+      headers: {'content-type': 'application/json'},
+    );
   });
 
   // Routes agent protégées (repas, rechargement, bilan)
   routeurPrincipal.mount(
     '/agent/',
-    Pipeline().addMiddleware(mwAgent).addHandler(
-      agentRoutes(serviceAgentSvc).call,
-    ),
+    Pipeline()
+        .addMiddleware(mwAgent)
+        .addHandler(agentRoutes(serviceAgentSvc).call),
   );
 
   // Routes protégées étudiants
   routeurPrincipal.mount(
     '/etudiants/',
-    Pipeline().addMiddleware(mwEtudiant).addHandler(
-      etudiantRoutes(serviceEtudiants).call,
-    ),
+    Pipeline()
+        .addMiddleware(mwEtudiant)
+        .addHandler(etudiantRoutes(serviceEtudiants).call),
   );
   routeurPrincipal.mount(
     '/transactions/',
-    Pipeline().addMiddleware(mwEtudiant).addHandler(
-      transactionRoutes(serviceTransactions).call,
-    ),
+    Pipeline()
+        .addMiddleware(mwEtudiant)
+        .addHandler(transactionRoutes(serviceTransactions).call),
   );
 
   final pipeline = Pipeline()
       .addMiddleware(logRequests())
+      .addMiddleware(_corsMiddleware())
       .addHandler(routeurPrincipal.call);
 
   final serveur = await io.serve(pipeline, InternetAddress.anyIPv4, 8080);

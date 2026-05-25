@@ -11,12 +11,20 @@ class Session {
 class ServiceAuthentification {
   ServiceAuthentification._();
 
-  // Lance une exception si les identifiants sont incorrects
-  static Future<Etudiant> connecter(
-      String matricule, String codeSecret) async {
+  static Map<String, String> get _entetes => {'Content-Type': 'application/json'};
+
+  static Future<Map<String, String>> _entetesBearear() async {
+    final token = await ServiceStockageLocal.recupererToken();
+    return {
+      'Content-Type': 'application/json',
+      if (token != null) 'Authorization': 'Bearer $token',
+    };
+  }
+
+  static Future<Etudiant> connecter(String matricule, String codeSecret) async {
     final reponse = await http.post(
       Uri.parse('${Config.urlBackend}/auth/connexion'),
-      headers: {'Content-Type': 'application/json'},
+      headers: _entetes,
       body: jsonEncode({'matricule': matricule, 'code_secret': codeSecret}),
     );
 
@@ -30,61 +38,42 @@ class ServiceAuthentification {
     final data = jsonDecode(reponse.body) as Map<String, dynamic>;
     final token = data['token'] as String;
     final etudiantJson = data['etudiant'] as Map<String, dynamic>;
+
     final etudiant = Etudiant.fromJson(etudiantJson);
 
-    Session.etudiantConnecte = etudiant;
     await ServiceStockageLocal.sauvegarderToken(token);
     await ServiceStockageLocal.sauvegarderMatricule(etudiant.matricule);
-    await ServiceStockageLocal.sauvegarderEtudiantJson(jsonEncode(etudiantJson));
+    await ServiceStockageLocal.sauvegarderPin(codeSecret);
 
+    Session.etudiantConnecte = etudiant;
     return etudiant;
   }
 
-  // Retourne true si le PIN est correct, false sinon
-  // Lance une exception si la session est expirée
   static Future<bool> verifierPin(String pin) async {
-    final token = await ServiceStockageLocal.recupererToken();
-    if (token == null) throw Exception('Session expirée');
-
-    final reponse = await http.post(
-      Uri.parse('${Config.urlBackend}/auth/verifier-pin'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-      body: jsonEncode({'code_secret': pin}),
-    );
-
-    if (reponse.statusCode == 401) throw Exception('Session expirée');
-
-    final data = jsonDecode(reponse.body) as Map<String, dynamic>;
-    return data['valide'] as bool;
+    final pinLocal = await ServiceStockageLocal.recupererPin();
+    return pinLocal == pin;
   }
 
-  // Retourne true si le changement a réussi
   static Future<bool> changerCodeSecret(
       String ancien, String nouveau, String confirmation) async {
     if (nouveau != confirmation) return false;
     if (!RegExp(r'^\d{4}$').hasMatch(nouveau)) return false;
 
-    final token = await ServiceStockageLocal.recupererToken();
-    if (token == null) return false;
-
+    final entetes = await _entetesBearear();
     final reponse = await http.put(
       Uri.parse('${Config.urlBackend}/auth/changer-code'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
+      headers: entetes,
       body: jsonEncode({'ancien_code': ancien, 'nouveau_code': nouveau}),
     );
 
+    if (reponse.statusCode == 200) {
+      await ServiceStockageLocal.sauvegarderPin(nouveau);
+    }
     return reponse.statusCode == 200;
   }
 
-  static bool estPremiereConnexion() {
-    return Session.etudiantConnecte?.premiereConnexion ?? false;
-  }
+  static bool estPremiereConnexion() =>
+      Session.etudiantConnecte?.premiereConnexion ?? false;
 
   static void deconnecter() {
     Session.etudiantConnecte = null;

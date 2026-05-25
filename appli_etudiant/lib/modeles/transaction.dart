@@ -51,9 +51,9 @@ class Transaction {
       };
 
   static ServiceRepas? _parseService(String? s) => switch (s) {
-        'matin' => ServiceRepas.matin,
-        'midi' => ServiceRepas.midi,
-        'soir' => ServiceRepas.soir,
+        'matin' || 'petit_dejeuner' => ServiceRepas.matin,
+        'midi' || 'dejeuner' => ServiceRepas.midi,
+        'soir' || 'diner' => ServiceRepas.soir,
         _ => null,
       };
 

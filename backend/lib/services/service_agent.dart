@@ -9,8 +9,8 @@ const _dureeToken = Duration(days: 30);
 
 // Créneaux repas : nom, début (minutes), fin (minutes), montant FCFA
 const _creneaux = [
-  {'nom': 'petit_dejeuner', 'debut': 390, 'fin': 450, 'montant': 100},  // 6h30-7h30
-  {'nom': 'dejeuner',       'debut': 690, 'fin': 825, 'montant': 200},  // 11h30-13h45
+  {'nom': 'petit_dejeuner', 'debut': 300, 'fin': 480, 'montant': 100},  // 5h00-8h00
+  {'nom': 'dejeuner',       'debut': 690, 'fin': 840, 'montant': 200},  // 11h30-14h00
   {'nom': 'diner',          'debut': 1050,'fin': 1200,'montant': 200},  // 17h30-20h00
 ];
 
@@ -62,52 +62,49 @@ class ServiceAgent {
     final matricule = _extraireMatricule(codeQr);
     if (matricule == null) throw InvalidQrException();
 
-    final creneau = _creneauActif();
-    if (creneau == null) throw HorsCreneauException();
-
     final etudiant = await _prisma.etudiant.findUnique(
       where: EtudiantWhereUniqueInput(codeQr: codeQr),
     );
     if (etudiant == null) throw EtudiantIntrouvableException();
 
-    final montant = creneau['montant'] as int;
+    final creneau = _creneauActif();
+    final montant = creneau != null ? creneau['montant'] as int : 200;
+    final serviceNom = creneau?['nom'] as String? ?? _serviceParHeure();
     if ((etudiant.solde ?? 0) < montant) throw SoldeInsuffisantException();
 
     final maintenant = DateTime.now();
     final idTransaction = '#${_genererIdTransaction()}';
 
-    await _prisma.$transaction((tx) async {
-      await tx.etudiant.update(
-        where: EtudiantWhereUniqueInput(id: etudiant.id),
-        data: PrismaUnion.$1(
-          EtudiantUpdateInput(
-            solde: PrismaUnion.$1((etudiant.solde ?? 0) - montant),
-          ),
+    await _prisma.etudiant.update(
+      where: EtudiantWhereUniqueInput(id: etudiant.id),
+      data: PrismaUnion.$1(
+        EtudiantUpdateInput(
+          solde: PrismaUnion.$1((etudiant.solde ?? 0) - montant),
         ),
-      );
+      ),
+    );
 
-      await tx.transaction.create(
-        data: PrismaUnion.$1(
-          TransactionCreateInput(
-            id: idTransaction,
-            type: 'repas',
-            montant: -montant,
-            dateHeure: maintenant,
-            service: PrismaUnion.$1(creneau['nom'] as String),
-            etudiant: EtudiantCreateNestedOneWithoutTransactionsInput(
-              connect: EtudiantWhereUniqueInput(id: etudiant.id),
-            ),
+    await _prisma.transaction.create(
+      data: PrismaUnion.$1(
+        TransactionCreateInput(
+          id: idTransaction,
+          type: 'repas',
+          montant: -montant,
+          dateHeure: maintenant,
+          service: PrismaUnion.$1(serviceNom),
+          etudiant: EtudiantCreateNestedOneWithoutTransactionsInput(
+            connect: EtudiantWhereUniqueInput(id: etudiant.id),
           ),
         ),
-      );
-    });
+      ),
+    );
 
     return {
       'id': idTransaction,
       'type': 'repas',
       'montant': -montant,
       'dateHeure': maintenant.toIso8601String(),
-      'service': creneau['nom'],
+      'service': serviceNom,
       'etudiant': {
         'matricule': etudiant.matricule,
         'nom': etudiant.nom,
@@ -131,30 +128,28 @@ class ServiceAgent {
     final maintenant = DateTime.now();
     final idTransaction = '#${_genererIdTransaction()}';
 
-    await _prisma.$transaction((tx) async {
-      await tx.etudiant.update(
-        where: EtudiantWhereUniqueInput(id: etudiant.id),
-        data: PrismaUnion.$1(
-          EtudiantUpdateInput(
-            solde: PrismaUnion.$1((etudiant.solde ?? 0) + montant),
-          ),
+    await _prisma.etudiant.update(
+      where: EtudiantWhereUniqueInput(id: etudiant.id),
+      data: PrismaUnion.$1(
+        EtudiantUpdateInput(
+          solde: PrismaUnion.$1((etudiant.solde ?? 0) + montant),
         ),
-      );
+      ),
+    );
 
-      await tx.transaction.create(
-        data: PrismaUnion.$1(
-          TransactionCreateInput(
-            id: idTransaction,
-            type: 'rechargement',
-            montant: montant,
-            dateHeure: maintenant,
-            etudiant: EtudiantCreateNestedOneWithoutTransactionsInput(
-              connect: EtudiantWhereUniqueInput(id: etudiant.id),
-            ),
+    await _prisma.transaction.create(
+      data: PrismaUnion.$1(
+        TransactionCreateInput(
+          id: idTransaction,
+          type: 'rechargement',
+          montant: montant,
+          dateHeure: maintenant,
+          etudiant: EtudiantCreateNestedOneWithoutTransactionsInput(
+            connect: EtudiantWhereUniqueInput(id: etudiant.id),
           ),
         ),
-      );
-    });
+      ),
+    );
 
     return {
       'id': idTransaction,
@@ -208,6 +203,13 @@ class ServiceAgent {
 
   // ── Helpers ───────────────────────────────────────────────────────────────
 
+  String _serviceParHeure() {
+    final heure = DateTime.now().hour;
+    if (heure < 11) return 'petit_dejeuner';
+    if (heure < 17) return 'dejeuner';
+    return 'diner';
+  }
+
   Map<String, dynamic>? _creneauActif() {
     final now = DateTime.now();
     final minutes = now.hour * 60 + now.minute;
@@ -229,9 +231,8 @@ class ServiceAgent {
 
   int _compteur = 0;
   String _genererIdTransaction() {
-    _compteur++;
-    final ms = DateTime.now().millisecondsSinceEpoch;
-    return (ms * 10 + _compteur % 10).toString().substring(6);
+    _compteur = (_compteur + 1) % 100000;
+    return _compteur.toString().padLeft(5, '0');
   }
 }
 

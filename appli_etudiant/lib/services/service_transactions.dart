@@ -14,39 +14,42 @@ class ServiceTransactions {
     final token = await ServiceStockageLocal.recupererToken();
     return {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ${token ?? ''}',
+      if (token != null) 'Authorization': 'Bearer $token',
     };
   }
 
   static Future<List<Transaction>> obtenirTransactions() async {
+    final entetes = await _entetes();
     final reponse = await http.get(
       Uri.parse('${Config.urlBackend}/transactions/'),
-      headers: await _entetes(),
+      headers: entetes,
     );
 
-    if (reponse.statusCode != 200) return [];
-    final liste = jsonDecode(reponse.body) as List;
+    if (reponse.statusCode != 200) {
+      throw Exception('Impossible de charger les transactions');
+    }
+
+    final liste = jsonDecode(reponse.body) as List<dynamic>;
     return liste
-        .map((j) => Transaction.fromJson(j as Map<String, dynamic>))
+        .map((e) => Transaction.fromJson(e as Map<String, dynamic>))
         .toList();
   }
 
-  static Future<List<Transaction>> obtenirDernieresTransactions(
-      {int nombre = 4}) async {
+  static Future<List<Transaction>> obtenirDernieresTransactions({int nombre = 4}) async {
     final liste = await obtenirTransactions();
     return liste.take(nombre).toList();
   }
 
-  // Les favoris ne sont pas encore dans le backend
   static List<Favori> obtenirFavoris() => [];
 
-  static Future<Etudiant?> chercherEtudiantParMatricule(
-      String matricule) async {
+  static Future<Etudiant?> chercherEtudiantParMatricule(String matricule) async {
+    final entetes = await _entetes();
     final reponse = await http.get(
       Uri.parse('${Config.urlBackend}/etudiants/$matricule'),
-      headers: await _entetes(),
+      headers: entetes,
     );
 
+    if (reponse.statusCode == 404) return null;
     if (reponse.statusCode != 200) return null;
 
     final data = jsonDecode(reponse.body) as Map<String, dynamic>;
@@ -54,17 +57,20 @@ class ServiceTransactions {
       matricule: data['matricule'] as String,
       nom: data['nom'] as String,
       prenom: data['prenom'] as String,
-      solde: 0,
-      codeQR: '',
+      solde: data['solde'] as int? ?? 0,
+      codeQR: data['codeQr'] as String? ?? '',
     );
   }
 
-  // Lance une exception si solde insuffisant ou autre erreur
   static Future<Transaction> effectuerTransfert(
       String matriculeDestinataire, int montant) async {
+    final etudiant = Session.etudiantConnecte;
+    if (etudiant == null) throw Exception('Session expirée');
+
+    final entetes = await _entetes();
     final reponse = await http.post(
       Uri.parse('${Config.urlBackend}/transactions/transfert'),
-      headers: await _entetes(),
+      headers: entetes,
       body: jsonEncode({
         'matricule_destinataire': matriculeDestinataire,
         'montant': montant,
@@ -74,29 +80,31 @@ class ServiceTransactions {
     if (reponse.statusCode == 422) throw Exception('Solde insuffisant');
     if (reponse.statusCode == 400) {
       final data = jsonDecode(reponse.body) as Map<String, dynamic>;
-      throw Exception(data['erreur'] ?? 'Montant invalide');
+      throw Exception(data['erreur'] ?? 'Erreur lors du transfert');
     }
-    if (reponse.statusCode != 200) throw Exception('Erreur serveur');
+    if (reponse.statusCode != 200) {
+      throw Exception('Erreur serveur (${reponse.statusCode})');
+    }
+
+    await rafraichirEtudiant();
 
     final data = jsonDecode(reponse.body) as Map<String, dynamic>;
-    _rafraichirSolde(); // fire-and-forget, le tableau de bord actualise à son retour
     return Transaction.fromJson(data);
   }
 
-  static Future<void> _rafraichirSolde() async {
+  static Future<void> rafraichirEtudiant() async {
+    final entetes = await _entetes();
     final reponse = await http.get(
       Uri.parse('${Config.urlBackend}/etudiants/moi'),
-      headers: await _entetes(),
+      headers: entetes,
     );
 
     if (reponse.statusCode == 200) {
       final data = jsonDecode(reponse.body) as Map<String, dynamic>;
-      final nouveauSolde = data['solde'] as int;
-      Session.etudiantConnecte?.solde = nouveauSolde;
-      await ServiceStockageLocal.sauvegarderEtudiantJson(jsonEncode(data));
+      final etudiant = Session.etudiantConnecte;
+      if (etudiant != null) {
+        etudiant.solde = data['solde'] as int? ?? etudiant.solde;
+      }
     }
   }
-
-  // Appelé au chargement du tableau de bord pour avoir le solde à jour
-  static Future<void> rafraichirEtudiant() => _rafraichirSolde();
 }

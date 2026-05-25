@@ -49,6 +49,12 @@ Router agentRoutes(ServiceAgent serviceAgent) {
         body: jsonEncode({'erreur': 'Solde insuffisant'}),
         headers: {'content-type': 'application/json'},
       );
+    } catch (e, st) {
+      return Response(
+        500,
+        body: jsonEncode({'erreur': e.toString(), 'stack': st.toString().split('\n').take(5).join('\n')}),
+        headers: {'content-type': 'application/json'},
+      );
     }
   });
 

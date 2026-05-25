@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'theme.dart';
 import 'app_state.dart';
 import 'login_screen.dart';
-import 'home_screen.dart';
+import 'accueil_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -41,7 +41,7 @@ class FlexFoodApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       home: Consumer<AppState>(
         builder: (_, state, __) =>
-            state.loggedIn ? const HomeScreen() : const LoginScreen(),
+            state.loggedIn ? const AccueilScreen() : const LoginScreen(),
       ),
     );
   }
