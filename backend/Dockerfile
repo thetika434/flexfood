@@ -7,16 +7,19 @@ RUN apt-get update && apt-get install -y nodejs npm --no-install-recommends \
 
 WORKDIR /app
 
-# Télécharger le query engine Prisma pour Linux/Debian (via npm install)
-COPY package.json package-lock.json ./
-RUN npm install --ignore-scripts=false
-
-# Dépendances Dart
-COPY pubspec.yaml pubspec.lock ./
+# Dépendances npm + Dart
+COPY package.json package-lock.json pubspec.yaml pubspec.lock ./
+RUN npm install
 RUN dart pub get --no-example
 
-# Copier le reste du code source (client Prisma généré inclus)
+# Copier le source complet
 COPY . .
+
+# Patcher dart_wrapper.sh pour utiliser le dart de Docker
+RUN printf '#!/bin/sh\nexec dart "$@"\n' > dart_wrapper.sh && chmod +x dart_wrapper.sh
+
+# Télécharge le query engine Linux/Debian ET régénère le client Dart
+RUN npx prisma generate
 
 # Compiler en binaire natif autonome
 RUN dart compile exe bin/serveur.dart -o bin/serveur
