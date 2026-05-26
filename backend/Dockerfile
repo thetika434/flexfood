@@ -18,12 +18,16 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 COPY prisma/ ./prisma/
 
-# Utiliser le provider JS par défaut pour télécharger l'engine sans dart
-RUN sed -i 's|provider = "./dart_wrapper.sh run orm"|provider = "prisma-client-js"|' prisma/schema.prisma
+# Provider JS + engineType binary pour forcer le téléchargement du binaire natif
+RUN sed -i \
+    -e 's|provider = "./dart_wrapper.sh run orm"|provider = "prisma-client-js"|' \
+    -e '/provider = "prisma-client-js"/a\  engineType = "binary"' \
+    prisma/schema.prisma
 RUN npm install && npx prisma generate
 
-# Copier l'engine (peu importe où prisma le place) vers un emplacement fixe
-RUN find /app/node_modules -name "query-engine-*" -type f | head -1 | xargs -I{} cp {} /app/engine
+# Localiser le binaire engine et le copier vers un chemin fixe
+RUN find /app/node_modules -name "query-engine-*" -not -name "*.js" -not -name "*.json" -not -name "*.ts" -type f \
+    | head -1 | xargs -I{} cp {} /app/engine
 
 # ── Stage 3 : image finale minimale ──────────────────────────────────────────
 FROM alpine:3.22
