@@ -14,6 +14,7 @@ import '../ecrans/confirmations/page_confirmation_transfert_envoye.dart';
 import '../ecrans/confirmations/page_confirmation_transfert_recu.dart';
 import '../ecrans/confirmations/page_confirmation_rechargement.dart';
 import '../ecrans/parametres/page_changer_code_secret.dart';
+import '../ecrans/parametres/page_profil.dart';
 
 class Routes {
   Routes._();
@@ -31,6 +32,7 @@ class Routes {
   static const String confirmationTransfertEnvoye = '/transfert/confirmation-envoye';
   static const String confirmationTransfertRecu = '/transfert/confirmation-recu';
   static const String confirmationRechargement = '/confirmation-rechargement';
+  static const String profil = '/parametres/profil';
   static const String changerCodeSecret = '/parametres/changer-code';
 
   static Map<String, WidgetBuilder> obtenirRoutes() {
@@ -62,6 +64,7 @@ class Routes {
             transaction: ModalRoute.of(context)!.settings.arguments
                 as Transaction,
           ),
+      profil: (_) => const PageProfil(),
       changerCodeSecret: (_) => const PageChangerCodeSecret(),
     };
   }

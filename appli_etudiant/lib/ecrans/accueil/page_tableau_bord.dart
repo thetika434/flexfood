@@ -112,8 +112,7 @@ class _PageTableauBordEtat extends State<PageTableauBord> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   GestureDetector(
-                    onTap: () => Navigator.pushNamed(
-                        context, Routes.changerCodeSecret),
+                    onTap: () => Navigator.pushNamed(context, Routes.profil),
                     child: const Icon(Icons.settings,
                         color: Couleurs.texte, size: 26),
                   ),
