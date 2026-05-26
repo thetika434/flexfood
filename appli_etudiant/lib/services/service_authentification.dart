@@ -45,6 +45,7 @@ class ServiceAuthentification {
     await ServiceStockageLocal.sauvegarderToken(token);
     await ServiceStockageLocal.sauvegarderMatricule(etudiant.matricule);
     await ServiceStockageLocal.sauvegarderPin(codeSecret);
+    await ServiceStockageLocal.sauvegarderEtudiantJson(jsonEncode(etudiant.toJson()));
 
     Session.etudiantConnecte = etudiant;
     return etudiant;
