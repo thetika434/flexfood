@@ -3,6 +3,7 @@ import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:orm/orm.dart';
 import 'package:backend/generated/prisma/client.dart';
 import 'package:backend/generated/prisma/prisma.dart';
+import 'package:backend/websocket/gestionnaire_ws.dart';
 
 const _cleSecrete = 'flexfood_jwt_secret_2024';
 const _dureeToken = Duration(days: 30);
@@ -99,6 +100,9 @@ class ServiceAgent {
       ),
     );
 
+    final nouveauSolde = (etudiant.solde ?? 0) - montant;
+    GestionnaireWS.notifierSolde(etudiant.id!, nouveauSolde);
+
     return {
       'id': idTransaction,
       'type': 'repas',
@@ -150,6 +154,9 @@ class ServiceAgent {
         ),
       ),
     );
+
+    final nouveauSolde = (etudiant.solde ?? 0) + montant;
+    GestionnaireWS.notifierSolde(etudiant.id!, nouveauSolde);
 
     return {
       'id': idTransaction,

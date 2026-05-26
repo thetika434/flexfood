@@ -8,6 +8,8 @@ import '../../modeles/transaction.dart';
 import '../../navigation/routeur.dart';
 import '../../services/service_authentification.dart';
 import '../../services/service_transactions.dart';
+import '../../services/service_websocket.dart';
+import '../../config.dart';
 import '../../utilitaires/formateur.dart';
 
 class PageTableauBord extends StatefulWidget {
@@ -26,6 +28,16 @@ class _PageTableauBordEtat extends State<PageTableauBord> {
   void initState() {
     super.initState();
     _charger();
+    ServiceWebSocket.connecter(Config.urlBackend);
+    ServiceWebSocket.onMajSolde((nouveauSolde) {
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    ServiceWebSocket.onMajSolde((_) {});
+    super.dispose();
   }
 
   Future<void> _charger() async {

@@ -1,6 +1,7 @@
 import 'package:orm/orm.dart';
 import 'package:backend/generated/prisma/client.dart';
 import 'package:backend/generated/prisma/prisma.dart';
+import 'package:backend/websocket/gestionnaire_ws.dart';
 
 class ServiceTransactions {
   ServiceTransactions(this._prisma);
@@ -121,6 +122,10 @@ class ServiceTransactions {
         ),
       );
     });
+
+    // Notifier les deux étudiants en temps réel
+    GestionnaireWS.notifierSolde(etudiantEmetteurId, (emetteur.solde ?? 0) - montant);
+    GestionnaireWS.notifierSolde(destinataire.id!, (destinataire.solde ?? 0) + montant);
 
     return {
       'id': idEnvoye,

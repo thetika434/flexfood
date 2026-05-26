@@ -77,6 +77,16 @@ class ServiceAuth {
     );
   }
 
+  Future<Map<String, dynamic>?> etudiantDepuisToken(String token) async {
+    final id = extraireEtudiantId(token);
+    if (id == null) return null;
+    final e = await _prisma.etudiant.findUnique(
+      where: EtudiantWhereUniqueInput(id: id),
+    );
+    if (e == null) return null;
+    return {'id': e.id, 'solde': e.solde ?? 0, 'matricule': e.matricule};
+  }
+
   static int? extraireEtudiantId(String token) {
     try {
       final jwt = JWT.verify(token, SecretKey(_cleSecrete));

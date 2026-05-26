@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import '../modeles/etudiant.dart';
 import '../config.dart';
 import 'service_stockage_local.dart';
+import 'service_websocket.dart';
 
 class Session {
   static Etudiant? etudiantConnecte;
@@ -76,6 +77,7 @@ class ServiceAuthentification {
       Session.etudiantConnecte?.premiereConnexion ?? false;
 
   static void deconnecter() {
+    ServiceWebSocket.deconnecter();
     Session.etudiantConnecte = null;
     ServiceStockageLocal.toutEffacer();
   }

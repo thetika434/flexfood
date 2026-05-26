@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as io;
 import 'package:shelf_router/shelf_router.dart';
+import 'package:shelf_web_socket/shelf_web_socket.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:backend/generated/prisma/client.dart';
 import 'package:backend/services/service_auth.dart';
 import 'package:backend/services/service_etudiants.dart';
@@ -15,6 +17,7 @@ import 'package:backend/routes/agent_routes.dart';
 import 'package:backend/routes/admin_routes.dart';
 import 'package:backend/middlewares/auth_middleware.dart';
 import 'package:backend/middlewares/agent_middleware.dart';
+import 'package:backend/websocket/gestionnaire_ws.dart';
 
 Middleware _corsMiddleware() {
   const headers = {
@@ -69,6 +72,44 @@ void main() async {
         .addMiddleware(adminMiddleware())
         .addHandler(adminRoutes(prisma).call),
   );
+
+  // ── WebSocket — solde temps réel ──────────────────────────────────────────
+  // Connexion : ws://host:8080/ws?token=<jwt_etudiant>
+  routeurPrincipal.get('/ws', webSocketHandler((WebSocketChannel canal, String? _) {
+    int? etudiantId;
+
+    canal.stream.listen(
+      (message) async {
+        if (etudiantId != null) return; // déjà authentifié
+        try {
+          final data = jsonDecode(message as String) as Map<String, dynamic>;
+          final token = data['token'] as String?;
+          if (token == null) {
+            canal.sink.add(jsonEncode({'type': 'erreur', 'message': 'token requis'}));
+            return;
+          }
+          final etudiant = await serviceAuth.etudiantDepuisToken(token);
+          if (etudiant == null) {
+            canal.sink.add(jsonEncode({'type': 'erreur', 'message': 'token invalide'}));
+            canal.sink.close();
+            return;
+          }
+          etudiantId = etudiant['id'] as int;
+          GestionnaireWS.enregistrer(etudiantId!, canal);
+          canal.sink.add(jsonEncode({'type': 'connecte', 'solde': etudiant['solde']}));
+          print('[WS] Étudiant ${etudiant['matricule']} connecté (${GestionnaireWS.nbConnexions} connexions actives)');
+        } catch (_) {
+          canal.sink.add(jsonEncode({'type': 'erreur', 'message': 'message invalide'}));
+        }
+      },
+      onDone: () {
+        if (etudiantId != null) {
+          GestionnaireWS.desinscrire(etudiantId!);
+          print('[WS] Étudiant $etudiantId déconnecté (${GestionnaireWS.nbConnexions} connexions actives)');
+        }
+      },
+    );
+  }));
 
   // Routes auth étudiants (publiques)
   routeurPrincipal.mount('/auth/', authRoutes(serviceAuth).call);
