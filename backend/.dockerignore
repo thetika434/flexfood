@@ -1,0 +1,7 @@
+.dart_tool/
+.git/
+build/
+node_modules/
+test/
+*.md
+pubspec_overrides.yaml

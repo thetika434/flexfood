@@ -35,10 +35,11 @@ Middleware _corsMiddleware() {
 }
 
 void main() async {
-  final prisma = PrismaClient(
-    datasourceUrl:
-        'postgresql://flexfood_user:flexfood2024@localhost:5432/flexfood',
-  );
+  final dbUrl = Platform.environment['DATABASE_URL'] ??
+      'postgresql://flexfood_user:flexfood2024@localhost:5432/flexfood';
+  final port = int.tryParse(Platform.environment['PORT'] ?? '') ?? 80;
+
+  final prisma = PrismaClient(datasourceUrl: dbUrl);
 
   final serviceAuth = ServiceAuth(prisma);
   final serviceEtudiants = ServiceEtudiants(prisma);
@@ -166,6 +167,6 @@ void main() async {
       .addMiddleware(_corsMiddleware())
       .addHandler(routeurPrincipal.call);
 
-  final serveur = await io.serve(pipeline, InternetAddress.anyIPv4, 8080);
+  final serveur = await io.serve(pipeline, InternetAddress.anyIPv4, port);
   print('Serveur FlexFood démarré sur http://localhost:${serveur.port}');
 }

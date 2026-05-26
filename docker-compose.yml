@@ -1,0 +1,30 @@
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "80:80"
+    environment:
+      DATABASE_URL: postgresql://flexfood_user:flexfood2024@db:5432/flexfood
+      PORT: 80
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: flexfood_user
+      POSTGRES_PASSWORD: flexfood2024
+      POSTGRES_DB: flexfood
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U flexfood_user -d flexfood"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
