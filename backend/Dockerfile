@@ -22,6 +22,9 @@ COPY prisma/ ./prisma/
 RUN sed -i 's|provider = "./dart_wrapper.sh run orm"|provider = "prisma-client-js"|' prisma/schema.prisma
 RUN npm install && npx prisma generate
 
+# Copier l'engine (peu importe où prisma le place) vers un emplacement fixe
+RUN find /app/node_modules -name "query-engine-*" -type f | head -1 | xargs -I{} cp {} /app/engine
+
 # ── Stage 3 : image finale minimale ──────────────────────────────────────────
 FROM alpine:3.22
 
@@ -30,7 +33,7 @@ RUN apk add --no-cache libgcc libstdc++ openssl
 WORKDIR /app
 
 COPY --from=dart-builder /app/bin/serveur ./serveur
-COPY --from=prisma-builder /app/prisma/query-engine-* ./prisma/prisma-query-engine
+COPY --from=prisma-builder /app/engine ./prisma/prisma-query-engine
 
 ENV DATABASE_URL="postgresql://postgres:mMjWnhgByXaVizmYMeKqtobgVSwIajAQ@zephyr.proxy.rlwy.net:54918/railway"
 ENV PORT=8080
