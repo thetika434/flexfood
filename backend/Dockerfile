@@ -32,8 +32,8 @@ WORKDIR /app
 # Serveur compilé
 COPY --from=build /app/bin/serveur ./serveur
 
-# Query engine téléchargé pour linux/debian-openssl-3.0.x
-COPY --from=build /app/node_modules/prisma/query-engine-debian-openssl-3.0.x ./prisma/prisma-query-engine
+# Query engine placé par npx prisma generate
+COPY --from=build /app/prisma/prisma-query-engine ./prisma/prisma-query-engine
 RUN chmod +x ./prisma/prisma-query-engine
 
 # Variables d'environnement (à surcharger au déploiement)
