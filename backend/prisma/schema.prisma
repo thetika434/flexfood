@@ -26,7 +26,7 @@ model Etudiant {
 }
 
 model Transaction {
-  id                   String    @id @db.VarChar(10)
+  id                   String    @id @db.VarChar(36)
   type                 String    @db.VarChar(30)
   montant              Int
   dateHeure            DateTime  @default(now()) @map("date_heure")

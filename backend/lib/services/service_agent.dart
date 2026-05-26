@@ -1,3 +1,4 @@
+import 'package:uuid/uuid.dart';
 import 'package:bcrypt/bcrypt.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:orm/orm.dart';
@@ -74,7 +75,7 @@ class ServiceAgent {
     if ((etudiant.solde ?? 0) < montant) throw SoldeInsuffisantException();
 
     final maintenant = DateTime.now();
-    final idTransaction = '#${_genererIdTransaction()}';
+    final idTransaction = _genererIdTransaction();
 
     await _prisma.etudiant.update(
       where: EtudiantWhereUniqueInput(id: etudiant.id),
@@ -130,7 +131,7 @@ class ServiceAgent {
     if (etudiant == null) throw EtudiantIntrouvableException();
 
     final maintenant = DateTime.now();
-    final idTransaction = '#${_genererIdTransaction()}';
+    final idTransaction = _genererIdTransaction();
 
     await _prisma.etudiant.update(
       where: EtudiantWhereUniqueInput(id: etudiant.id),
@@ -236,11 +237,8 @@ class ServiceAgent {
     return sansPrefix.substring(0, dernierTiret);
   }
 
-  int _compteur = 0;
-  String _genererIdTransaction() {
-    _compteur = (_compteur + 1) % 100000;
-    return _compteur.toString().padLeft(5, '0');
-  }
+  final _uuid = const Uuid();
+  String _genererIdTransaction() => _uuid.v4();
 }
 
 // ── Exceptions ────────────────────────────────────────────────────────────────

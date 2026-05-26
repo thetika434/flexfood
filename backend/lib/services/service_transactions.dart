@@ -1,3 +1,4 @@
+import 'package:uuid/uuid.dart';
 import 'package:orm/orm.dart';
 import 'package:backend/generated/prisma/client.dart';
 import 'package:backend/generated/prisma/prisma.dart';
@@ -69,8 +70,8 @@ class ServiceTransactions {
     if (destinataire == null) throw Exception('Destinataire introuvable');
 
     final maintenant = DateTime.now();
-    final idEnvoye = '#${_genererIdTransaction()}';
-    final idRecu = '#${_genererIdTransaction()}';
+    final idEnvoye = _genererIdTransaction();
+    final idRecu = _genererIdTransaction();
 
     // Bloc atomique : soit tout réussit, soit tout est annulé
     await _prisma.$transaction((tx) async {
@@ -137,13 +138,8 @@ class ServiceTransactions {
     };
   }
 
-  int _compteur = 0;
-
-  String _genererIdTransaction() {
-    _compteur++;
-    final ms = DateTime.now().millisecondsSinceEpoch;
-    return (ms * 10 + _compteur % 10).toString().substring(6);
-  }
+  final _uuid = const Uuid();
+  String _genererIdTransaction() => _uuid.v4();
 }
 
 class SoldeInsuffisantException implements Exception {
