@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 import '../../constantes/couleurs.dart';
 import '../../constantes/dimensions.dart';
 import '../../constantes/styles_texte.dart';
 import '../../navigation/routeur.dart';
 import '../../services/service_authentification.dart';
-import '../../utilitaires/formateur.dart';
 
 class PageProfil extends StatelessWidget {
   const PageProfil({super.key});
@@ -97,34 +95,6 @@ class PageProfil extends StatelessWidget {
               Text(etudiant.matricule,
                   style: StylesTexte.corpsSecondaire),
 
-              const SizedBox(height: Dimensions.espaceL),
-
-              // Carte solde
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(Dimensions.espaceM),
-                decoration: BoxDecoration(
-                  color: Couleurs.vertPrincipal,
-                  borderRadius:
-                      BorderRadius.circular(Dimensions.rayonCarte),
-                ),
-                child: Column(
-                  children: [
-                    Text('Solde actuel',
-                        style: StylesTexte.corpsSecondaire
-                            .copyWith(color: Colors.white70)),
-                    const SizedBox(height: 4),
-                    Text(
-                      Formateur.formaterSolde(etudiant.solde),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
 
               const SizedBox(height: Dimensions.espaceL),
 
@@ -147,41 +117,6 @@ class PageProfil extends StatelessWidget {
                 valeur: etudiant.nom,
               ),
 
-              const SizedBox(height: Dimensions.espaceL),
-
-              // QR Code
-              Container(
-                padding: const EdgeInsets.all(Dimensions.espaceM),
-                decoration: BoxDecoration(
-                  color: Couleurs.blanc,
-                  borderRadius:
-                      BorderRadius.circular(Dimensions.rayonCarte),
-                  border: Border.all(color: Couleurs.bordure),
-                ),
-                child: Column(
-                  children: [
-                    Text('Mon QR Code', style: StylesTexte.label),
-                    const SizedBox(height: Dimensions.espaceM),
-                    QrImageView(
-                      data: etudiant.codeQR,
-                      version: QrVersions.auto,
-                      size: 160,
-                      eyeStyle: const QrEyeStyle(
-                        eyeShape: QrEyeShape.square,
-                        color: Couleurs.vertPrincipal,
-                      ),
-                      dataModuleStyle: const QrDataModuleStyle(
-                        dataModuleShape: QrDataModuleShape.square,
-                        color: Couleurs.vertPrincipal,
-                      ),
-                    ),
-                    const SizedBox(height: Dimensions.espaceS),
-                    Text('Présentez ce code à l\'agent pour le repas',
-                        style: StylesTexte.corpsSecondaire,
-                        textAlign: TextAlign.center),
-                  ],
-                ),
-              ),
 
               const SizedBox(height: Dimensions.espaceL),
 
