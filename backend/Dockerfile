@@ -31,7 +31,7 @@ RUN apk add --no-cache libgcc libstdc++ openssl
 WORKDIR /app
 
 COPY --from=dart-builder /app/bin/serveur ./serveur
-COPY --from=prisma-builder /app/prisma/prisma-query-engine ./prisma/prisma-query-engine
+COPY --from=prisma-builder /app/prisma/query-engine-* ./prisma/prisma-query-engine
 
 ENV DATABASE_URL="postgresql://postgres:mMjWnhgByXaVizmYMeKqtobgVSwIajAQ@zephyr.proxy.rlwy.net:54918/railway"
 ENV PORT=8080
