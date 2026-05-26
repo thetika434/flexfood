@@ -1,3 +1,3 @@
 class Config {
-  static const String urlBackend = 'http://192.168.1.18:8080';
+  static const String urlBackend = 'https://flexfood-production.up.railway.app';
 }
