@@ -18,8 +18,12 @@ FROM debian:bookworm-slim
 
 WORKDIR /app
 
-# Copier uniquement le binaire compilé
+# Copier le serveur compilé
 COPY --from=build /app/bin/serveur ./serveur
+
+# Copier le query engine Prisma (binaire séparé requis à l'exécution)
+COPY --from=build /app/prisma/prisma-query-engine ./prisma/prisma-query-engine
+RUN chmod +x ./prisma/prisma-query-engine
 
 # Variables d'environnement (à surcharger au déploiement)
 ENV DATABASE_URL="postgresql://postgres:mMjWnhgByXaVizmYMeKqtobgVSwIajAQ@zephyr.proxy.rlwy.net:54918/railway"
