@@ -17,8 +17,9 @@ WORKDIR /app
 
 COPY package.json package-lock.json ./
 COPY prisma/ ./prisma/
-COPY dart_wrapper.sh ./
 
+# Utiliser le provider JS par défaut pour télécharger l'engine sans dart
+RUN sed -i 's|provider = "./dart_wrapper.sh run orm"|provider = "prisma-client-js"|' prisma/schema.prisma
 RUN npm install && npx prisma generate
 
 # ── Stage 3 : image finale minimale ──────────────────────────────────────────
