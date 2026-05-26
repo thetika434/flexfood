@@ -1,5 +1,5 @@
 # ── Stage 1 : compilation Dart (musl pour Alpine) ────────────────────────────
-FROM ghcr.io/dart-musl/dart:3.8.0 AS dart-builder
+FROM ghcr.io/dart-musl/dart:3.9.4 AS dart-builder
 
 WORKDIR /app
 
@@ -17,6 +17,7 @@ WORKDIR /app
 
 COPY package.json package-lock.json ./
 COPY prisma/ ./prisma/
+COPY dart_wrapper.sh ./
 
 RUN npm install && npx prisma generate
 
