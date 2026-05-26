@@ -22,9 +22,9 @@ WORKDIR /app
 COPY --from=build /app/bin/serveur ./serveur
 
 # Variables d'environnement (à surcharger au déploiement)
-ENV DATABASE_URL=""
-ENV PORT=80
+ENV DATABASE_URL="postgresql://postgres:mMjWnhgByXaVizmYMeKqtobgVSwIajAQ@zephyr.proxy.rlwy.net:54918/railway"
+ENV PORT=8080
 
-EXPOSE 80
+EXPOSE 8080
 
 CMD ["./serveur"]
