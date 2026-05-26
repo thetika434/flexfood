@@ -18,9 +18,6 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 COPY prisma/ ./prisma/
 
-# Patcher dart_wrapper.sh pour que npx prisma generate ne bloque pas
-RUN printf '#!/bin/sh\n' > dart_wrapper.sh && chmod +x dart_wrapper.sh
-
 RUN npm install && npx prisma generate
 
 # ── Stage 3 : image finale minimale ──────────────────────────────────────────
