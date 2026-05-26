@@ -6,6 +6,7 @@ import '../../composants/element_transaction.dart';
 import '../../modeles/transaction.dart';
 import '../../navigation/routeur.dart';
 import '../../services/service_transactions.dart';
+import '../../services/service_websocket.dart';
 import '../../utilitaires/formateur.dart';
 
 class PageHistorique extends StatefulWidget {
@@ -23,6 +24,13 @@ class _PageHistoriqueEtat extends State<PageHistorique> {
   void initState() {
     super.initState();
     _charger();
+    ServiceWebSocket.ajouterEcouteurTransactions(_charger);
+  }
+
+  @override
+  void dispose() {
+    ServiceWebSocket.retirerEcouteurTransactions(_charger);
+    super.dispose();
   }
 
   Future<void> _charger() async {

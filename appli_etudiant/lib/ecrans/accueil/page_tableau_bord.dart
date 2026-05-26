@@ -32,12 +32,19 @@ class _PageTableauBordEtat extends State<PageTableauBord> {
     ServiceWebSocket.onMajSolde((nouveauSolde) {
       if (mounted) setState(() {});
     });
+    ServiceWebSocket.ajouterEcouteurTransactions(_rechargerTransactions);
   }
 
   @override
   void dispose() {
     ServiceWebSocket.onMajSolde((_) {});
+    ServiceWebSocket.retirerEcouteurTransactions(_rechargerTransactions);
     super.dispose();
+  }
+
+  Future<void> _rechargerTransactions() async {
+    final transactions = await ServiceTransactions.obtenirDernieresTransactions();
+    if (mounted) setState(() => _dernieresTransactions = transactions);
   }
 
   Future<void> _charger() async {
@@ -126,11 +133,15 @@ class _PageTableauBordEtat extends State<PageTableauBord> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text(
-                      _soldeVisible
-                          ? '${Formateur.formaterSolde(etudiant.solde)} '
-                          : '••••••••••',
-                      style: StylesTexte.solde,
+                    Flexible(
+                      fit: FlexFit.loose,
+                      child: Text(
+                        _soldeVisible
+                            ? '${Formateur.formaterSolde(etudiant.solde)} '
+                            : '••••••••',
+                        style: StylesTexte.solde,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                     const SizedBox(width: Dimensions.espaceS),
                     GestureDetector(
