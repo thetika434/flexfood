@@ -41,7 +41,11 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       backgroundColor: AppColors.primary,
       body: SafeArea(
-        child: Column(children: [
+        child: SingleChildScrollView(
+          child: SizedBox(
+            height: MediaQuery.of(context).size.height -
+                MediaQuery.of(context).padding.top,
+            child: Column(children: [
           // Zone verte — logo + titre
           Expanded(
             child: Center(
@@ -213,6 +217,8 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
         ]),
+          ),
+        ),
       ),
     );
   }
