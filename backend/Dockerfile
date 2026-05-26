@@ -1,42 +1,38 @@
-# ── Étape 1 : compilation + téléchargement du query engine ───────────────────
-FROM dart:stable AS build
-
-# Installer Node.js pour que npm télécharge le bon query engine Prisma
-RUN apt-get update && apt-get install -y nodejs npm --no-install-recommends \
-    && rm -rf /var/lib/apt/lists/*
+# ── Stage 1 : compilation Dart (musl pour Alpine) ────────────────────────────
+FROM ghcr.io/dart-musl/dart:3.8.0 AS dart-builder
 
 WORKDIR /app
 
-# Dépendances npm + Dart
-COPY package.json package-lock.json pubspec.yaml pubspec.lock ./
-RUN npm install
+COPY pubspec.yaml pubspec.lock ./
 RUN dart pub get --no-example
 
-# Copier le source complet
 COPY . .
 
-# Patcher dart_wrapper.sh pour utiliser le dart de Docker
-RUN printf '#!/bin/sh\nexec dart "$@"\n' > dart_wrapper.sh && chmod +x dart_wrapper.sh
-
-# Télécharge le query engine Linux/Debian ET régénère le client Dart
-RUN npx prisma generate
-
-# Compiler en binaire natif autonome
 RUN dart compile exe bin/serveur.dart -o bin/serveur
 
-# ── Étape 2 : image minimale d'exécution ─────────────────────────────────────
-FROM debian:bookworm-slim
+# ── Stage 2 : téléchargement du query engine Prisma ──────────────────────────
+FROM node:alpine3.22 AS prisma-builder
 
 WORKDIR /app
 
-# Serveur compilé
-COPY --from=build /app/bin/serveur ./serveur
+COPY package.json package-lock.json ./
+COPY prisma/ ./prisma/
 
-# Query engine placé par npx prisma generate
-COPY --from=build /app/prisma/prisma-query-engine ./prisma/prisma-query-engine
-RUN chmod +x ./prisma/prisma-query-engine
+# Patcher dart_wrapper.sh pour que npx prisma generate ne bloque pas
+RUN printf '#!/bin/sh\n' > dart_wrapper.sh && chmod +x dart_wrapper.sh
 
-# Variables d'environnement (à surcharger au déploiement)
+RUN npm install && npx prisma generate
+
+# ── Stage 3 : image finale minimale ──────────────────────────────────────────
+FROM alpine:3.22
+
+RUN apk add --no-cache libgcc libstdc++ openssl
+
+WORKDIR /app
+
+COPY --from=dart-builder /app/bin/serveur ./serveur
+COPY --from=prisma-builder /app/prisma/prisma-query-engine ./prisma/prisma-query-engine
+
 ENV DATABASE_URL="postgresql://postgres:mMjWnhgByXaVizmYMeKqtobgVSwIajAQ@zephyr.proxy.rlwy.net:54918/railway"
 ENV PORT=8080
 
