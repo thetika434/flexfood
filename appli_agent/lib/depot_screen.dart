@@ -57,7 +57,10 @@ class _DepotScreenState extends State<DepotScreen> {
                   if (raw == null) return;
                   String matricule;
                   if (raw.startsWith('FLEXFOOD-')) {
-                    matricule = raw.substring('FLEXFOOD-'.length, raw.lastIndexOf('-'));
+                    final sansPrefix = raw.substring('FLEXFOOD-'.length);
+                    matricule = sansPrefix.length > 37
+                        ? sansPrefix.substring(0, sansPrefix.length - 37)
+                        : sansPrefix;
                   } else {
                     matricule = raw;
                   }
