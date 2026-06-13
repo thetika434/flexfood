@@ -59,13 +59,24 @@ class _PageConnexionEtat extends State<PageConnexion> {
     });
 
     try {
-      await ServiceAuthentification.connecter(matricule, codeSecret);
+      final etudiant = await ServiceAuthentification.connecter(matricule, codeSecret);
       if (!mounted) return;
-      Navigator.pushNamedAndRemoveUntil(
-        context,
-        Routes.accueil,
-        (route) => false,
-      );
+
+      if (etudiant.premiereConnexion) {
+        // Première connexion → forcer le changement de PIN
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          Routes.changerCodeSecret,
+          (route) => false,
+          arguments: true, // indique que c'est une première connexion
+        );
+      } else {
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          Routes.accueil,
+          (route) => false,
+        );
+      }
     } catch (e) {
       setState(() {
         _messageErreur = e.toString().replaceFirst('Exception: ', '');

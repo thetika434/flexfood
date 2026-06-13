@@ -25,15 +25,25 @@ class ServiceAuth {
     if (!valide) return null;
 
     final token = _genererToken(etudiant.id!, matricule);
+    final estPremiere = BCrypt.checkpw('0000', etudiant.codeSecret!);
+
+    // Raw query to get role since Prisma client not yet regenerated
+    final rows = await _prisma.$raw.query(
+      'SELECT role FROM etudiants WHERE id = \$1',
+      [etudiant.id!],
+    );
+    final role = rows.isNotEmpty ? (rows.first['role'] as String? ?? 'etudiant') : 'etudiant';
 
     return {
       'token': token,
+      'premiereConnexion': estPremiere,
       'etudiant': {
         'matricule': etudiant.matricule,
         'nom': etudiant.nom,
         'prenom': etudiant.prenom,
         'solde': etudiant.solde,
         'codeQr': etudiant.codeQr,
+        'role': role,
       },
     };
   }

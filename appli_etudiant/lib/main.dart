@@ -1,10 +1,12 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'composants/banniere_notification.dart';
 import 'constantes/couleurs.dart';
 import 'modeles/etudiant.dart';
 import 'navigation/routeur.dart';
 import 'services/service_authentification.dart';
 import 'services/service_stockage_local.dart';
+import 'services/service_websocket.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,6 +28,10 @@ void main() async {
     }
   }
 
+  ServiceWebSocket.onNotification((titre, message) {
+    BanniereNotification.afficher(titre, message);
+  });
+
   runApp(AppFlexFood(routeInitiale: routeInitiale));
 }
 
@@ -46,6 +52,10 @@ class AppFlexFood extends StatelessWidget {
       ),
       initialRoute: routeInitiale,
       routes: Routes.obtenirRoutes(),
+      builder: (context, child) => BanniereNotification(
+        key: BanniereNotification.cle,
+        enfant: child!,
+      ),
     );
   }
 }

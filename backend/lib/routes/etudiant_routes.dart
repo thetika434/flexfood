@@ -7,6 +7,15 @@ import 'package:backend/middlewares/auth_middleware.dart';
 Router etudiantRoutes(ServiceEtudiants serviceEtudiants) {
   final router = Router();
 
+  router.get('/favoris', (Request req) async {
+    final etudiantId = req.etudiantId;
+    final favoris = await serviceEtudiants.obtenirFavoris(etudiantId);
+    return Response.ok(
+      jsonEncode(favoris),
+      headers: {'content-type': 'application/json'},
+    );
+  });
+
   router.get('/moi', (Request req) async {
     final etudiantId = req.etudiantId;
     final profil = await serviceEtudiants.obtenirProfil(etudiantId);

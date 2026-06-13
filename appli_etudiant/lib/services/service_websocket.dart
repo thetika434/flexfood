@@ -11,6 +11,7 @@ class ServiceWebSocket {
   static StreamSubscription? _abonnement;
   static void Function(int nouveauSolde)? _onSolde;
   static final List<void Function()> _onTransactions = [];
+  static void Function(String titre, String message)? _onNotification;
 
   static bool _actif = false;
   static bool _deconnexionVoulue = false;
@@ -20,6 +21,10 @@ class ServiceWebSocket {
 
   static void onMajSolde(void Function(int) callback) {
     _onSolde = callback;
+  }
+
+  static void onNotification(void Function(String titre, String message) callback) {
+    _onNotification = callback;
   }
 
   static void ajouterEcouteurTransactions(void Function() callback) {
@@ -57,12 +62,23 @@ class ServiceWebSocket {
           try {
             final data = jsonDecode(message as String) as Map<String, dynamic>;
             final type = data['type'] as String?;
-            if (type == 'connecte' || type == 'maj_solde') {
+            if (type == 'maj_solde') {
+              final solde = data['solde'] as int?;
+              if (solde != null) {
+                final ancien = Session.etudiantConnecte?.solde ?? 0;
+                Session.etudiantConnecte?.solde = solde;
+                _onSolde?.call(solde);
+                for (final cb in List.of(_onTransactions)) { cb(); }
+                final diff = solde - ancien;
+                if (diff > 0) {
+                  _onNotification?.call('Rechargement reçu', '+$diff FCFA ajoutés à votre compte');
+                }
+              }
+            } else if (type == 'connecte') {
               final solde = data['solde'] as int?;
               if (solde != null) {
                 Session.etudiantConnecte?.solde = solde;
                 _onSolde?.call(solde);
-                for (final cb in List.of(_onTransactions)) { cb(); }
               }
             }
           } catch (_) {}

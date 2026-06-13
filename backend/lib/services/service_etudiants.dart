@@ -33,4 +33,26 @@ class ServiceEtudiants {
       'prenom': etudiant.prenom,
     };
   }
+
+  Future<List<Map<String, dynamic>>> obtenirFavoris(int etudiantId) async {
+    final rows = await _prisma.$raw.query(
+      '''
+      SELECT e.matricule, e.nom, e.prenom, COUNT(*) as nb
+      FROM transactions t
+      JOIN etudiants e ON e.matricule = t.autre_parti_matricule
+      WHERE t.etudiant_id = \$1 AND t.type = 'transfert_envoye'
+        AND t.autre_parti_matricule IS NOT NULL
+      GROUP BY e.matricule, e.nom, e.prenom
+      ORDER BY nb DESC
+      LIMIT 5
+      ''',
+      [etudiantId],
+    );
+
+    return rows.map((r) => {
+      'matricule': r['matricule'],
+      'nom': r['nom'],
+      'prenom': r['prenom'],
+    }).toList();
+  }
 }

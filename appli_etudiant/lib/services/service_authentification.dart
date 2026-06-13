@@ -39,8 +39,12 @@ class ServiceAuthentification {
     final data = jsonDecode(reponse.body) as Map<String, dynamic>;
     final token = data['token'] as String;
     final etudiantJson = data['etudiant'] as Map<String, dynamic>;
+    final premiereConnexion = data['premiereConnexion'] as bool? ?? false;
 
-    final etudiant = Etudiant.fromJson(etudiantJson);
+    final etudiant = Etudiant.fromJson({
+      ...etudiantJson,
+      'premiereConnexion': premiereConnexion,
+    });
 
     await ServiceStockageLocal.sauvegarderToken(token);
     await ServiceStockageLocal.sauvegarderMatricule(etudiant.matricule);

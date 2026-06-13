@@ -40,7 +40,22 @@ class ServiceTransactions {
     return liste.take(nombre).toList();
   }
 
-  static List<Favori> obtenirFavoris() => [];
+  static Future<List<Favori>> obtenirFavoris() async {
+    final headers = await _entetes();
+    final reponse = await http.get(
+      Uri.parse('${Config.urlBackend}/etudiants/favoris'),
+      headers: headers,
+    );
+    if (reponse.statusCode != 200) return [];
+    final liste = jsonDecode(reponse.body) as List<dynamic>;
+    return liste.map((e) {
+      final m = e as Map<String, dynamic>;
+      return Favori(
+        matricule: m['matricule'] as String,
+        nom: '${m['prenom']} ${m['nom']}',
+      );
+    }).toList();
+  }
 
   static Future<Etudiant?> chercherEtudiantParMatricule(String matricule) async {
     final entetes = await _entetes();

@@ -8,13 +8,36 @@ import '../../modeles/etudiant.dart';
 import '../../navigation/routeur.dart';
 import '../../services/service_transactions.dart';
 
-class PageChoisirModeTransfert extends StatelessWidget {
+class PageChoisirModeTransfert extends StatefulWidget {
   const PageChoisirModeTransfert({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final favoris = ServiceTransactions.obtenirFavoris();
+  State<PageChoisirModeTransfert> createState() => _PageChoisirModeTransfertEtat();
+}
 
+class _PageChoisirModeTransfertEtat extends State<PageChoisirModeTransfert> {
+  late Future<List<Favori>> _favoris;
+
+  @override
+  void initState() {
+    super.initState();
+    _favoris = ServiceTransactions.obtenirFavoris();
+  }
+
+  void _allerVersEtudiant(Favori f) {
+    final parties = f.nom.split(' ');
+    final etudiant = Etudiant(
+      matricule: f.matricule,
+      nom: parties.length > 1 ? parties.last : f.nom,
+      prenom: parties.first,
+      solde: 0,
+      codeQR: '',
+    );
+    Navigator.pushNamed(context, Routes.montantTransfert, arguments: etudiant);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Couleurs.fondPrincipal,
       appBar: AppBar(
@@ -42,7 +65,6 @@ class PageChoisirModeTransfert extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Boutons de mode
               _BoutonMode(
                 icone: Icons.qr_code_scanner,
                 titre: 'Scanner un QR code',
@@ -56,32 +78,31 @@ class PageChoisirModeTransfert extends StatelessWidget {
                 titre: 'Saisir le matricule',
                 description: 'Entrez le matricule manuellement',
                 couleurIcone: Couleurs.surfaceContainer,
-                onAppui: () =>
-                    Navigator.pushNamed(context, Routes.saisirMatricule),
+                onAppui: () => Navigator.pushNamed(context, Routes.saisirMatricule),
               ),
 
-              if (favoris.isNotEmpty) ...[
-                const SizedBox(height: Dimensions.espaceL),
-                Text('Favoris', style: StylesTexte.titrePetit),
-                const SizedBox(height: Dimensions.espaceS),
-                ...favoris.map((f) => _LigneFavori(
-                      favori: f,
-                      onAppui: () {
-                        final etudiant = Etudiant(
-                          matricule: f.matricule,
-                          nom: f.nom.split(' ').last,
-                          prenom: f.nom.split(' ').first,
-                          solde: 0,
-                          codeQR: '',
-                        );
-                        Navigator.pushNamed(
-                          context,
-                          Routes.montantTransfert,
-                          arguments: etudiant,
-                        );
-                      },
-                    )),
-              ],
+              const SizedBox(height: Dimensions.espaceL),
+
+              FutureBuilder<List<Favori>>(
+                future: _favoris,
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const SizedBox.shrink();
+                  }
+                  final liste = snapshot.data!;
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Favoris', style: StylesTexte.titrePetit),
+                      const SizedBox(height: Dimensions.espaceS),
+                      ...liste.map((f) => _LigneFavori(
+                            favori: f,
+                            onAppui: () => _allerVersEtudiant(f),
+                          )),
+                    ],
+                  );
+                },
+              ),
             ],
           ),
         ),

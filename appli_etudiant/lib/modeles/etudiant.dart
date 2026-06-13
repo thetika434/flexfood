@@ -4,6 +4,7 @@ class Etudiant {
   final String prenom;
   int solde;
   final String codeQR;
+  final String role;
   bool premiereConnexion;
 
   Etudiant({
@@ -12,8 +13,11 @@ class Etudiant {
     required this.prenom,
     required this.solde,
     required this.codeQR,
+    this.role = 'etudiant',
     this.premiereConnexion = false,
   });
+
+  bool get estEnseignant => role == 'enseignant';
 
   factory Etudiant.fromJson(Map<String, dynamic> json) => Etudiant(
         matricule: json['matricule'] as String,
@@ -21,6 +25,8 @@ class Etudiant {
         prenom: json['prenom'] as String,
         solde: json['solde'] as int,
         codeQR: json['codeQr'] as String? ?? '',
+        role: json['role'] as String? ?? 'etudiant',
+        premiereConnexion: json['premiereConnexion'] as bool? ?? false,
       );
 
   Map<String, dynamic> toJson() => {
@@ -29,6 +35,8 @@ class Etudiant {
         'prenom': prenom,
         'solde': solde,
         'codeQr': codeQR,
+        'role': role,
+        'premiereConnexion': premiereConnexion,
       };
 
   String get nomComplet => '$prenom $nom';

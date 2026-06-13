@@ -166,20 +166,22 @@ class _PageTableauBordEtat extends State<PageTableauBord> {
 
               const SizedBox(height: Dimensions.espaceM),
 
-              // Boutons d'action : Transfert + Historique
+              // Boutons d'action : Transfert (étudiants seulement) + Historique
               Row(
                 children: [
-                  Expanded(
-                    child: _BoutonAction(
-                      icone: Icons.currency_exchange,
-                      label: 'Transfert',
-                      couleurFond: Couleurs.fondIconeTransfertRecu,
-                      couleurIcone: Couleurs.texteSecondaire,
-                      onAppui: () => Navigator.pushNamed(
-                          context, Routes.choisirModeTransfert),
+                  if (!(Session.etudiantConnecte?.estEnseignant ?? false)) ...[
+                    Expanded(
+                      child: _BoutonAction(
+                        icone: Icons.currency_exchange,
+                        label: 'Transfert',
+                        couleurFond: Couleurs.fondIconeTransfertRecu,
+                        couleurIcone: Couleurs.texteSecondaire,
+                        onAppui: () => Navigator.pushNamed(
+                            context, Routes.choisirModeTransfert),
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: Dimensions.espaceM),
+                    const SizedBox(width: Dimensions.espaceM),
+                  ],
                   Expanded(
                     child: _BoutonAction(
                       icone: Icons.receipt,
