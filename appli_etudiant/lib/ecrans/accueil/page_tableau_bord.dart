@@ -86,7 +86,7 @@ class _PageTableauBordEtat extends State<PageTableauBord> {
     if (confirme == true && context.mounted) {
       ServiceAuthentification.deconnecter();
       Navigator.pushNamedAndRemoveUntil(
-          context, Routes.connexion, (route) => false);
+          context, Routes.choisirRole, (route) => false);
     }
   }
 

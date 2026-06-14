@@ -87,6 +87,9 @@ class _PageConnexionEtat extends State<PageConnexion> {
 
   @override
   Widget build(BuildContext context) {
+    final role = ModalRoute.of(context)?.settings.arguments as String? ?? 'etudiant';
+    final estEnseignant = role == 'enseignant';
+
     // TODO Bigo : Remplace ce Scaffold par le vrai design
     return Scaffold(
       backgroundColor: Couleurs.fondPrincipal,
@@ -104,7 +107,9 @@ class _PageConnexionEtat extends State<PageConnexion> {
                 Text('FlexFood', style: StylesTexte.titreMoyen),
                 const SizedBox(height: Dimensions.espaceS),
                 Text(
-                  'Bienvenue à l\'ESATIC. Connectez-vous\npour accéder à votre portefeuille étudiant.',
+                  estEnseignant
+                      ? 'Connectez-vous pour accéder\nà votre espace repas.'
+                      : 'Bienvenue à l\'ESATIC. Connectez-vous\npour accéder à votre portefeuille étudiant.',
                   style: StylesTexte.corpsSecondaire,
                   textAlign: TextAlign.center,
                 ),
@@ -112,7 +117,7 @@ class _PageConnexionEtat extends State<PageConnexion> {
                 const SizedBox(height: Dimensions.espaceXL),
 
                 ChampSaisie(
-                  label: 'MATRICULE ÉTUDIANT',
+                  label: estEnseignant ? 'MATRICULE ENSEIGNANT' : 'MATRICULE ÉTUDIANT',
                   indice: 'Ex: 21-ESATIC0123',
                   icone: Icons.badge_outlined,
                   controleur: _controleurMatricule,

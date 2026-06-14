@@ -1,5 +1,6 @@
-/// Usage : dart run bin/ajouter_etudiant.dart <matricule> <prenom> <nom> <pin>
-/// Exemple: dart run bin/ajouter_etudiant.dart 25-ESATIC0001 Kouame Ange 1234
+/// Usage : dart run bin/ajouter_etudiant.dart <matricule> <prenom> <nom> <pin> [role]
+/// Exemple étudiant  : dart run bin/ajouter_etudiant.dart 25-ESATIC0001 Kouame Ange 1234
+/// Exemple enseignant: dart run bin/ajouter_etudiant.dart ENS-2024-001 Jean Kouassi 0000 enseignant
 
 import 'dart:io';
 import 'package:bcrypt/bcrypt.dart';
@@ -19,6 +20,7 @@ void main(List<String> args) async {
   final prenom    = args[1];
   final nom       = args[2];
   final pin       = args[3];
+  final role      = args.length >= 5 ? args[4] : 'etudiant';
 
   if (!RegExp(r'^\d{4}$').hasMatch(pin)) {
     print('Erreur : le PIN doit être composé de 4 chiffres.');
@@ -29,10 +31,10 @@ void main(List<String> args) async {
   final codeQr     = 'FLEXFOOD-$matricule-${const Uuid().v4()}';
 
   final sql = """
-INSERT INTO etudiants (matricule, nom, prenom, solde, code_secret, code_qr)
-VALUES ('$matricule', '$nom', '$prenom', 0, '$codeSecret', '$codeQr')
+INSERT INTO etudiants (matricule, nom, prenom, solde, code_secret, code_qr, role)
+VALUES ('$matricule', '$nom', '$prenom', 0, '$codeSecret', '$codeQr', '$role')
 ON CONFLICT (matricule) DO NOTHING
-RETURNING id, matricule, nom, prenom;
+RETURNING id, matricule, nom, prenom, role;
 """;
 
   final result = await Process.run('psql', [_dbUrl, '-c', sql]);

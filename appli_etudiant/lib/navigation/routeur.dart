@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../modeles/transaction.dart';
 import '../modeles/etudiant.dart';
 import '../ecrans/accueil/page_tableau_bord.dart';
+import '../ecrans/authentification/page_choisir_role.dart';
 import '../ecrans/authentification/page_connexion.dart';
 import '../ecrans/authentification/page_deverrouillage.dart';
 import '../ecrans/historique/page_historique.dart';
@@ -20,6 +21,7 @@ class Routes {
   Routes._();
 
   // Noms des routes — utilise ces constantes dans tout le projet
+  static const String choisirRole = '/choisir-role';
   static const String connexion = '/connexion';
   static const String deverrouillage = '/deverrouillage';
   static const String accueil = '/accueil';
@@ -37,6 +39,7 @@ class Routes {
 
   static Map<String, WidgetBuilder> obtenirRoutes() {
     return {
+      choisirRole: (_) => const PageChoisirRole(),
       connexion: (_) => const PageConnexion(),
       deverrouillage: (_) => const PageDeverrouillage(),
       accueil: (_) => const PageTableauBord(),

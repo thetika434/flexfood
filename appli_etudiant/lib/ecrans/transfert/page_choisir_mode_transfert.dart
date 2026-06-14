@@ -6,6 +6,7 @@ import '../../composants/avatar_utilisateur.dart';
 import '../../modeles/favori.dart';
 import '../../modeles/etudiant.dart';
 import '../../navigation/routeur.dart';
+import '../../services/service_authentification.dart';
 import '../../services/service_transactions.dart';
 
 class PageChoisirModeTransfert extends StatefulWidget {
@@ -22,6 +23,11 @@ class _PageChoisirModeTransfertEtat extends State<PageChoisirModeTransfert> {
   void initState() {
     super.initState();
     _favoris = ServiceTransactions.obtenirFavoris();
+    if (Session.etudiantConnecte?.estEnseignant ?? false) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) Navigator.pop(context);
+      });
+    }
   }
 
   void _allerVersEtudiant(Favori f) {

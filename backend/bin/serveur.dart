@@ -74,7 +74,7 @@ void main() async {
         .addHandler(adminRoutes(prisma).call),
   );
 
-  // ── WebSocket — solde temps réel ──────────────────────────────────────────
+  // ── WebSocket — solde+ temps réel ──────────────────────────────────────────
   // Connexion : ws://host:8080/ws?token=<jwt_etudiant>
   routeurPrincipal.get('/ws', webSocketHandler((WebSocketChannel canal, String? _) {
     int? etudiantId;

@@ -13,7 +13,7 @@ void main() async {
 
   final matricule = await ServiceStockageLocal.recupererMatricule();
   final token = await ServiceStockageLocal.recupererToken();
-  String routeInitiale = Routes.connexion;
+  String routeInitiale = Routes.choisirRole;
 
   if (matricule != null && token != null) {
     final etudiantJson = await ServiceStockageLocal.recupererEtudiantJson();

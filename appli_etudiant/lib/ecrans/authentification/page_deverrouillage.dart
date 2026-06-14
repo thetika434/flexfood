@@ -86,7 +86,7 @@ class _PageDeverrouillageEtat extends State<PageDeverrouillage> {
       // Session expirée → retour connexion
       if (message.contains('expirée') || message.contains('401')) {
         Navigator.pushNamedAndRemoveUntil(
-            context, Routes.connexion, (route) => false);
+            context, Routes.choisirRole, (route) => false);
       } else {
         // Erreur réseau → afficher message sans rediriger
         setState(() {
