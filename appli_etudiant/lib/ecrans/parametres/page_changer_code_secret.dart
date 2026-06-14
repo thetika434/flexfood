@@ -23,6 +23,7 @@ import '../../composants/bouton_principal.dart';
 import '../../constantes/couleurs.dart';
 import '../../constantes/styles_texte.dart';
 import '../../constantes/dimensions.dart';
+import '../../navigation/routeur.dart';
 import '../../services/service_authentification.dart';
 
 class PageChangerCodeSecret extends StatefulWidget {
@@ -36,6 +37,17 @@ class _PageChangerCodeSecretState extends State<PageChangerCodeSecret> {
   final _ancienCodeController = TextEditingController();
   final _nouveauCodeController = TextEditingController();
   final _confirmerCodeController = TextEditingController();
+  bool _premiereConnexion = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final args = ModalRoute.of(context)?.settings.arguments;
+    if (args == true) {
+      _premiereConnexion = true;
+      _ancienCodeController.text = '0000';
+    }
+  }
 
   @override
   void dispose() {
@@ -45,7 +57,7 @@ class _PageChangerCodeSecretState extends State<PageChangerCodeSecret> {
     super.dispose();
   }
 
-  void _validerChangement() {
+  Future<void> _validerChangement() async {
     final ancien = _ancienCodeController.text;
     final nouveau = _nouveauCodeController.text;
     final confirmer = _confirmerCodeController.text;
@@ -57,8 +69,10 @@ class _PageChangerCodeSecretState extends State<PageChangerCodeSecret> {
       return;
     }
 
-    bool succes =
-        ServiceAuthentification.changerCodeSecret(ancien, nouveau, confirmer);
+    final succes = await ServiceAuthentification.changerCodeSecret(
+        ancien, nouveau, confirmer);
+
+    if (!mounted) return;
 
     if (succes) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -67,7 +81,11 @@ class _PageChangerCodeSecretState extends State<PageChangerCodeSecret> {
           backgroundColor: Couleurs.vertPrincipal,
         ),
       );
-      Navigator.pop(context);
+      if (_premiereConnexion) {
+        Navigator.pushNamedAndRemoveUntil(context, Routes.accueil, (r) => false);
+      } else {
+        Navigator.pop(context);
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -143,27 +161,31 @@ class _PageChangerCodeSecretState extends State<PageChangerCodeSecret> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Changer mon mot de passe',
-                style: TextStyle(
+              Text(
+                _premiereConnexion ? 'Créer mon code secret' : 'Changer mon code secret',
+                style: const TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
                   color: Couleurs.vertFonce,
                 ),
               ),
               const SizedBox(height: Dimensions.espaceS),
-              const Text(
-                'Protégez votre compte FlexFood en utilisant un code secret robuste.',
+              Text(
+                _premiereConnexion
+                    ? 'Bienvenue ! Choisissez un code secret personnel pour sécuriser votre compte.'
+                    : 'Protégez votre compte FlexFood en utilisant un code secret robuste.',
                 style: StylesTexte.corpsSecondaire,
               ),
               const SizedBox(height: Dimensions.espaceXL),
-              _buildCustomField(
-                label: 'Ancien code secret',
-                indice: '••••',
-                icone: Icons.lock_outline,
-                controleur: _ancienCodeController,
-              ),
-              const SizedBox(height: Dimensions.espaceM),
+              if (!_premiereConnexion) ...[
+                _buildCustomField(
+                  label: 'Ancien code secret',
+                  indice: '••••',
+                  icone: Icons.lock_outline,
+                  controleur: _ancienCodeController,
+                ),
+                const SizedBox(height: Dimensions.espaceM),
+              ],
               _buildCustomField(
                 label: 'Nouveau code secret',
                 indice: '••••',

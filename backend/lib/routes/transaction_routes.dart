@@ -51,6 +51,12 @@ Router transactionRoutes(ServiceTransactions serviceTransactions) {
         jsonEncode(transaction),
         headers: {'content-type': 'application/json'},
       );
+    } on EnseignantNePeutPasTransfererException {
+      return Response(
+        403,
+        body: jsonEncode({'erreur': 'Les enseignants ne peuvent pas effectuer de transferts'}),
+        headers: {'content-type': 'application/json'},
+      );
     } on SoldeInsuffisantException {
       return Response(
         422,

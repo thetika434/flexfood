@@ -39,6 +39,7 @@ class _PageConnexionEtat extends State<PageConnexion> {
   final _controleurMatricule = TextEditingController();
   final _controleurCodeSecret = TextEditingController();
   bool _codeVisible = false;
+  bool _chargement = false;
   String? _messageErreur;
 
   @override
@@ -48,28 +49,47 @@ class _PageConnexionEtat extends State<PageConnexion> {
     super.dispose();
   }
 
-  void _seConnecter() {
+  Future<void> _seConnecter() async {
     final matricule = _controleurMatricule.text.trim();
     final codeSecret = _controleurCodeSecret.text.trim();
 
-    final etudiant =
-        ServiceAuthentification.connecter(matricule, codeSecret);
+    setState(() {
+      _chargement = true;
+      _messageErreur = null;
+    });
 
-    if (etudiant != null) {
-      Navigator.pushNamedAndRemoveUntil(
-        context,
-        Routes.accueil,
-        (route) => false,
-      );
-    } else {
+    try {
+      final etudiant = await ServiceAuthentification.connecter(matricule, codeSecret);
+      if (!mounted) return;
+
+      if (etudiant.premiereConnexion) {
+        // Première connexion → forcer le changement de PIN
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          Routes.changerCodeSecret,
+          (route) => false,
+          arguments: true, // indique que c'est une première connexion
+        );
+      } else {
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          Routes.accueil,
+          (route) => false,
+        );
+      }
+    } catch (e) {
       setState(() {
-        _messageErreur = 'Matricule ou code secret incorrect.';
+        _messageErreur = e.toString().replaceFirst('Exception: ', '');
+        _chargement = false;
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final role = ModalRoute.of(context)?.settings.arguments as String? ?? 'etudiant';
+    final estEnseignant = role == 'enseignant';
+
     // TODO Bigo : Remplace ce Scaffold par le vrai design
     return Scaffold(
       backgroundColor: Couleurs.fondPrincipal,
@@ -87,7 +107,9 @@ class _PageConnexionEtat extends State<PageConnexion> {
                 Text('FlexFood', style: StylesTexte.titreMoyen),
                 const SizedBox(height: Dimensions.espaceS),
                 Text(
-                  'Bienvenue à l\'ESATIC. Connectez-vous\npour accéder à votre portefeuille étudiant.',
+                  estEnseignant
+                      ? 'Connectez-vous pour accéder\nà votre espace repas.'
+                      : 'Bienvenue à l\'ESATIC. Connectez-vous\npour accéder à votre portefeuille étudiant.',
                   style: StylesTexte.corpsSecondaire,
                   textAlign: TextAlign.center,
                 ),
@@ -95,7 +117,7 @@ class _PageConnexionEtat extends State<PageConnexion> {
                 const SizedBox(height: Dimensions.espaceXL),
 
                 ChampSaisie(
-                  label: 'MATRICULE ÉTUDIANT',
+                  label: estEnseignant ? 'MATRICULE ENSEIGNANT' : 'MATRICULE ÉTUDIANT',
                   indice: 'Ex: 21-ESATIC0123',
                   icone: Icons.badge_outlined,
                   controleur: _controleurMatricule,
@@ -133,8 +155,8 @@ class _PageConnexionEtat extends State<PageConnexion> {
                 const SizedBox(height: Dimensions.espaceXL),
 
                 BoutonPrincipal(
-                  texte: 'Se connecter',
-                  onAppui: _seConnecter,
+                  texte: _chargement ? 'Connexion...' : 'Se connecter',
+                  onAppui: _chargement ? () {} : _seConnecter,
                 ),
 
                 const SizedBox(height: Dimensions.espaceM),

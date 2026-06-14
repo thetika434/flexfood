@@ -1,61 +1,125 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import '../modeles/etudiant.dart';
 import '../modeles/transaction.dart';
 import '../modeles/favori.dart';
-import '../donnees_fictives/etudiants_fictifs.dart';
-import '../donnees_fictives/transactions_fictives.dart';
+import '../config.dart';
 import 'service_authentification.dart';
+import 'service_stockage_local.dart';
 
 class ServiceTransactions {
   ServiceTransactions._();
 
-  static List<Transaction> obtenirTransactions() {
-    return List.from(TransactionsFictives.transactions);
+  static Future<Map<String, String>> _entetes() async {
+    final token = await ServiceStockageLocal.recupererToken();
+    return {
+      'Content-Type': 'application/json',
+      if (token != null) 'Authorization': 'Bearer $token',
+    };
   }
 
-  static List<Transaction> obtenirDernieresTransactions({int nombre = 4}) {
-    final liste = obtenirTransactions();
-    liste.sort((a, b) => b.dateHeure.compareTo(a.dateHeure));
+  static Future<List<Transaction>> obtenirTransactions() async {
+    final entetes = await _entetes();
+    final reponse = await http.get(
+      Uri.parse('${Config.urlBackend}/transactions/'),
+      headers: entetes,
+    );
+
+    if (reponse.statusCode != 200) {
+      throw Exception('Impossible de charger les transactions');
+    }
+
+    final liste = jsonDecode(reponse.body) as List<dynamic>;
+    return liste
+        .map((e) => Transaction.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  static Future<List<Transaction>> obtenirDernieresTransactions({int nombre = 4}) async {
+    final liste = await obtenirTransactions();
     return liste.take(nombre).toList();
   }
 
-  static List<Favori> obtenirFavoris() {
-    return List.from(TransactionsFictives.favoris);
+  static Future<List<Favori>> obtenirFavoris() async {
+    final headers = await _entetes();
+    final reponse = await http.get(
+      Uri.parse('${Config.urlBackend}/etudiants/favoris'),
+      headers: headers,
+    );
+    if (reponse.statusCode != 200) return [];
+    final liste = jsonDecode(reponse.body) as List<dynamic>;
+    return liste.map((e) {
+      final m = e as Map<String, dynamic>;
+      return Favori(
+        matricule: m['matricule'] as String,
+        nom: '${m['prenom']} ${m['nom']}',
+      );
+    }).toList();
   }
 
-  static Etudiant? chercherEtudiantParMatricule(String matricule) {
-    return EtudiantsFictifs.chercherParMatricule(matricule);
-  }
-
-  // Retourne null si le transfert échoue, sinon retourne la transaction créée
-  static Transaction? effectuerTransfert(
-      String matriculeDestinataire, int montant) {
-    final expediteur = Session.etudiantConnecte;
-    if (expediteur == null) return null;
-
-    // Vérifications règles métier
-    if (montant <= 0) return null;
-    if (montant % 100 != 0) return null;
-    if (expediteur.solde < montant) return null;
-    if (matriculeDestinataire == expediteur.matricule) return null;
-
-    final destinataire =
-        EtudiantsFictifs.chercherParMatricule(matriculeDestinataire);
-    if (destinataire == null) return null;
-
-    // Mise à jour des soldes (atomique)
-    expediteur.solde -= montant;
-    destinataire.solde += montant;
-
-    final transaction = Transaction(
-      id: '#${(DateTime.now().millisecondsSinceEpoch % 9000) + 1000}',
-      type: TypeTransaction.transfertEnvoye,
-      montant: -montant,
-      dateHeure: DateTime.now(),
-      autrePartiNom: destinataire.prenom,
-      autrePartiMatricule: destinataire.matricule,
+  static Future<Etudiant?> chercherEtudiantParMatricule(String matricule) async {
+    final entetes = await _entetes();
+    final reponse = await http.get(
+      Uri.parse('${Config.urlBackend}/etudiants/$matricule'),
+      headers: entetes,
     );
 
-    TransactionsFictives.transactions.insert(0, transaction);
-    return transaction;
+    if (reponse.statusCode == 404) return null;
+    if (reponse.statusCode != 200) return null;
+
+    final data = jsonDecode(reponse.body) as Map<String, dynamic>;
+    return Etudiant(
+      matricule: data['matricule'] as String,
+      nom: data['nom'] as String,
+      prenom: data['prenom'] as String,
+      solde: data['solde'] as int? ?? 0,
+      codeQR: data['codeQr'] as String? ?? '',
+    );
+  }
+
+  static Future<Transaction> effectuerTransfert(
+      String matriculeDestinataire, int montant) async {
+    final etudiant = Session.etudiantConnecte;
+    if (etudiant == null) throw Exception('Session expirée');
+
+    final entetes = await _entetes();
+    final reponse = await http.post(
+      Uri.parse('${Config.urlBackend}/transactions/transfert'),
+      headers: entetes,
+      body: jsonEncode({
+        'matricule_destinataire': matriculeDestinataire,
+        'montant': montant,
+      }),
+    );
+
+    if (reponse.statusCode == 422) throw Exception('Solde insuffisant');
+    if (reponse.statusCode == 400) {
+      final data = jsonDecode(reponse.body) as Map<String, dynamic>;
+      throw Exception(data['erreur'] ?? 'Erreur lors du transfert');
+    }
+    if (reponse.statusCode != 200) {
+      throw Exception('Erreur serveur (${reponse.statusCode})');
+    }
+
+    await rafraichirEtudiant();
+
+    final data = jsonDecode(reponse.body) as Map<String, dynamic>;
+    return Transaction.fromJson(data);
+  }
+
+  static Future<void> rafraichirEtudiant() async {
+    final entetes = await _entetes();
+    final reponse = await http.get(
+      Uri.parse('${Config.urlBackend}/etudiants/moi'),
+      headers: entetes,
+    );
+
+    if (reponse.statusCode == 200) {
+      final data = jsonDecode(reponse.body) as Map<String, dynamic>;
+      final etudiant = Session.etudiantConnecte;
+      if (etudiant != null) {
+        etudiant.solde = data['solde'] as int? ?? etudiant.solde;
+      }
+    }
   }
 }

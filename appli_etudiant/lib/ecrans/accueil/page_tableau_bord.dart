@@ -8,6 +8,8 @@ import '../../modeles/transaction.dart';
 import '../../navigation/routeur.dart';
 import '../../services/service_authentification.dart';
 import '../../services/service_transactions.dart';
+import '../../services/service_websocket.dart';
+import '../../config.dart';
 import '../../utilitaires/formateur.dart';
 
 class PageTableauBord extends StatefulWidget {
@@ -19,18 +21,73 @@ class PageTableauBord extends StatefulWidget {
 
 class _PageTableauBordEtat extends State<PageTableauBord> {
   bool _soldeVisible = true;
-  late List<Transaction> _dernieresTransactions;
+  List<Transaction> _dernieresTransactions = [];
+  bool _chargement = true;
 
   @override
   void initState() {
     super.initState();
-    _dernieresTransactions = ServiceTransactions.obtenirDernieresTransactions();
+    _charger();
+    ServiceWebSocket.connecter(Config.urlBackend);
+    ServiceWebSocket.onMajSolde((nouveauSolde) {
+      if (mounted) setState(() {});
+    });
+    ServiceWebSocket.ajouterEcouteurTransactions(_rechargerTransactions);
+  }
+
+  @override
+  void dispose() {
+    ServiceWebSocket.onMajSolde((_) {});
+    ServiceWebSocket.retirerEcouteurTransactions(_rechargerTransactions);
+    super.dispose();
+  }
+
+  Future<void> _rechargerTransactions() async {
+    final transactions = await ServiceTransactions.obtenirDernieresTransactions();
+    if (mounted) setState(() => _dernieresTransactions = transactions);
+  }
+
+  Future<void> _charger() async {
+    final transactions = await ServiceTransactions.obtenirDernieresTransactions();
+    await ServiceTransactions.rafraichirEtudiant();
+    if (mounted) {
+      setState(() {
+        _dernieresTransactions = transactions;
+        _chargement = false;
+      });
+    }
   }
 
   void _basculerSolde() {
     setState(() {
       _soldeVisible = !_soldeVisible;
     });
+  }
+
+  Future<void> _confirmerDeconnexion(BuildContext context) async {
+    final confirme = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Déconnexion'),
+        content: const Text('Voulez-vous vraiment vous déconnecter ?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Annuler'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Déconnecter',
+                style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+    if (confirme == true && context.mounted) {
+      ServiceAuthentification.deconnecter();
+      Navigator.pushNamedAndRemoveUntil(
+          context, Routes.choisirRole, (route) => false);
+    }
   }
 
   @override
@@ -41,17 +98,30 @@ class _PageTableauBordEtat extends State<PageTableauBord> {
     return Scaffold(
       backgroundColor: Couleurs.fondPrincipal,
       body: SafeArea(
-        child: SingleChildScrollView(
+        child: RefreshIndicator(
+          onRefresh: _charger,
+          color: Couleurs.vertPrincipal,
+          child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
           padding: const EdgeInsets.all(Dimensions.paddingPage),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Icône paramètres en haut à gauche
-              GestureDetector(
-                onTap: () =>
-                    Navigator.pushNamed(context, Routes.changerCodeSecret),
-                child:
-                    const Icon(Icons.settings, color: Couleurs.texte, size: 26),
+              // Menu en haut à droite : paramètres + déconnexion
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  GestureDetector(
+                    onTap: () => Navigator.pushNamed(context, Routes.profil),
+                    child: const Icon(Icons.settings,
+                        color: Couleurs.texte, size: 26),
+                  ),
+                  GestureDetector(
+                    onTap: () => _confirmerDeconnexion(context),
+                    child: const Icon(Icons.logout,
+                        color: Couleurs.texteSecondaire, size: 24),
+                  ),
+                ],
               ),
 
               const SizedBox(height: Dimensions.espaceL),
@@ -62,11 +132,15 @@ class _PageTableauBordEtat extends State<PageTableauBord> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text(
-                      _soldeVisible
-                          ? '${Formateur.formaterSolde(etudiant.solde)} '
-                          : '••••••••••',
-                      style: StylesTexte.solde,
+                    Flexible(
+                      fit: FlexFit.loose,
+                      child: Text(
+                        _soldeVisible
+                            ? '${Formateur.formaterSolde(etudiant.solde)} '
+                            : '••••••••',
+                        style: StylesTexte.solde,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                     const SizedBox(width: Dimensions.espaceS),
                     GestureDetector(
@@ -92,20 +166,22 @@ class _PageTableauBordEtat extends State<PageTableauBord> {
 
               const SizedBox(height: Dimensions.espaceM),
 
-              // Boutons d'action : Transfert + Historique
+              // Boutons d'action : Transfert (étudiants seulement) + Historique
               Row(
                 children: [
-                  Expanded(
-                    child: _BoutonAction(
-                      icone: Icons.currency_exchange,
-                      label: 'Transfert',
-                      couleurFond: Couleurs.fondIconeTransfertRecu,
-                      couleurIcone: Couleurs.texteSecondaire,
-                      onAppui: () => Navigator.pushNamed(
-                          context, Routes.choisirModeTransfert),
+                  if (!(Session.etudiantConnecte?.estEnseignant ?? false)) ...[
+                    Expanded(
+                      child: _BoutonAction(
+                        icone: Icons.currency_exchange,
+                        label: 'Transfert',
+                        couleurFond: Couleurs.fondIconeTransfertRecu,
+                        couleurIcone: Couleurs.texteSecondaire,
+                        onAppui: () => Navigator.pushNamed(
+                            context, Routes.choisirModeTransfert),
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: Dimensions.espaceM),
+                    const SizedBox(width: Dimensions.espaceM),
+                  ],
                   Expanded(
                     child: _BoutonAction(
                       icone: Icons.receipt,
@@ -137,6 +213,9 @@ class _PageTableauBordEtat extends State<PageTableauBord> {
               const SizedBox(height: Dimensions.espaceS),
 
               // Liste des transactions récentes
+              if (_chargement)
+                const Center(child: CircularProgressIndicator())
+              else
               Column(
                 children: _dernieresTransactions.map((transaction) {
                   return Padding(
@@ -144,12 +223,15 @@ class _PageTableauBordEtat extends State<PageTableauBord> {
                     child: ElementTransaction(
                       transaction: transaction,
                       onAppui: () {
-                        if (transaction.type == TypeTransaction.repas) {
-                          Navigator.pushNamed(
-                            context,
-                            Routes.detailRepas,
-                            arguments: transaction,
-                          );
+                        switch (transaction.type) {
+                          case TypeTransaction.repas:
+                            Navigator.pushNamed(context, Routes.detailRepas, arguments: transaction);
+                          case TypeTransaction.transfertEnvoye:
+                            Navigator.pushNamed(context, Routes.confirmationTransfertEnvoye, arguments: transaction);
+                          case TypeTransaction.transfertRecu:
+                            Navigator.pushNamed(context, Routes.confirmationTransfertRecu, arguments: transaction);
+                          case TypeTransaction.rechargement:
+                            Navigator.pushNamed(context, Routes.confirmationRechargement, arguments: transaction);
                         }
                       },
                     ),
@@ -180,6 +262,7 @@ class _PageTableauBordEtat extends State<PageTableauBord> {
               const SizedBox(height: Dimensions.espaceL),
             ],
           ),
+        ),
         ),
       ),
     );

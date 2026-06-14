@@ -1,8 +1,10 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import '../modeles/etudiant.dart';
-import '../donnees_fictives/etudiants_fictifs.dart';
+import '../config.dart';
 import 'service_stockage_local.dart';
+import 'service_websocket.dart';
 
-// Stocke l'étudiant connecté pendant toute la session
 class Session {
   static Etudiant? etudiantConnecte;
 }
@@ -10,49 +12,77 @@ class Session {
 class ServiceAuthentification {
   ServiceAuthentification._();
 
-  static Etudiant? connecter(String matricule, String codeSecret) {
-    final etudiant = EtudiantsFictifs.chercherParMatricule(matricule);
-    if (etudiant == null) return null;
+  static Map<String, String> get _entetes => {'Content-Type': 'application/json'};
 
-    final codeCorrect = EtudiantsFictifs.codesSecrets[matricule];
-    if (codeCorrect != codeSecret) return null;
+  static Future<Map<String, String>> _entetesBearear() async {
+    final token = await ServiceStockageLocal.recupererToken();
+    return {
+      'Content-Type': 'application/json',
+      if (token != null) 'Authorization': 'Bearer $token',
+    };
+  }
+
+  static Future<Etudiant> connecter(String matricule, String codeSecret) async {
+    final reponse = await http.post(
+      Uri.parse('${Config.urlBackend}/auth/connexion'),
+      headers: _entetes,
+      body: jsonEncode({'matricule': matricule, 'code_secret': codeSecret}),
+    );
+
+    if (reponse.statusCode == 401) {
+      throw Exception('Matricule ou code secret incorrect');
+    }
+    if (reponse.statusCode != 200) {
+      throw Exception('Erreur serveur (${reponse.statusCode})');
+    }
+
+    final data = jsonDecode(reponse.body) as Map<String, dynamic>;
+    final token = data['token'] as String;
+    final etudiantJson = data['etudiant'] as Map<String, dynamic>;
+    final premiereConnexion = data['premiereConnexion'] as bool? ?? false;
+
+    final etudiant = Etudiant.fromJson({
+      ...etudiantJson,
+      'premiereConnexion': premiereConnexion,
+    });
+
+    await ServiceStockageLocal.sauvegarderToken(token);
+    await ServiceStockageLocal.sauvegarderMatricule(etudiant.matricule);
+    await ServiceStockageLocal.sauvegarderPin(codeSecret);
+    await ServiceStockageLocal.sauvegarderEtudiantJson(jsonEncode(etudiant.toJson()));
 
     Session.etudiantConnecte = etudiant;
-    ServiceStockageLocal.sauvegarderSolde(etudiant.solde);
-    ServiceStockageLocal.sauvegarderCodeQR(etudiant.codeQR);
-    ServiceStockageLocal.sauvegarderMatricule(etudiant.matricule);
-
     return etudiant;
   }
 
-  static bool verifierPin(String pin) {
-    final etudiant = Session.etudiantConnecte;
-    if (etudiant == null) return false;
-    final codeCorrect = EtudiantsFictifs.codesSecrets[etudiant.matricule];
-    return codeCorrect == pin;
+  static Future<bool> verifierPin(String pin) async {
+    final pinLocal = await ServiceStockageLocal.recupererPin();
+    return pinLocal == pin;
   }
 
-  static bool changerCodeSecret(
-      String ancien, String nouveau, String confirmation) {
+  static Future<bool> changerCodeSecret(
+      String ancien, String nouveau, String confirmation) async {
     if (nouveau != confirmation) return false;
-    if (nouveau.length != 4) return false;
     if (!RegExp(r'^\d{4}$').hasMatch(nouveau)) return false;
 
-    final etudiant = Session.etudiantConnecte;
-    if (etudiant == null) return false;
+    final entetes = await _entetesBearear();
+    final reponse = await http.put(
+      Uri.parse('${Config.urlBackend}/auth/changer-code'),
+      headers: entetes,
+      body: jsonEncode({'ancien_code': ancien, 'nouveau_code': nouveau}),
+    );
 
-    final codeCorrect = EtudiantsFictifs.codesSecrets[etudiant.matricule];
-    if (codeCorrect != ancien) return false;
-
-    EtudiantsFictifs.codesSecrets[etudiant.matricule] = nouveau;
-    return true;
+    if (reponse.statusCode == 200) {
+      await ServiceStockageLocal.sauvegarderPin(nouveau);
+    }
+    return reponse.statusCode == 200;
   }
 
-  static bool estPremiereConnexion() {
-    return Session.etudiantConnecte?.premiereConnexion ?? false;
-  }
+  static bool estPremiereConnexion() =>
+      Session.etudiantConnecte?.premiereConnexion ?? false;
 
   static void deconnecter() {
+    ServiceWebSocket.deconnecter();
     Session.etudiantConnecte = null;
     ServiceStockageLocal.toutEffacer();
   }

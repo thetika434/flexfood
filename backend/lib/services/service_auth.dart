@@ -25,15 +25,25 @@ class ServiceAuth {
     if (!valide) return null;
 
     final token = _genererToken(etudiant.id!, matricule);
+    final estPremiere = BCrypt.checkpw('0000', etudiant.codeSecret!);
+
+    // Raw query to get role since Prisma client not yet regenerated
+    final rows = await _prisma.$raw.query(
+      'SELECT role FROM etudiants WHERE id = \$1',
+      [etudiant.id!],
+    );
+    final role = rows.isNotEmpty ? (rows.first['role'] as String? ?? 'etudiant') : 'etudiant';
 
     return {
       'token': token,
+      'premiereConnexion': estPremiere,
       'etudiant': {
         'matricule': etudiant.matricule,
         'nom': etudiant.nom,
         'prenom': etudiant.prenom,
         'solde': etudiant.solde,
         'codeQr': etudiant.codeQr,
+        'role': role,
       },
     };
   }
@@ -75,6 +85,16 @@ class ServiceAuth {
       SecretKey(_cleSecrete),
       expiresIn: _dureeToken,
     );
+  }
+
+  Future<Map<String, dynamic>?> etudiantDepuisToken(String token) async {
+    final id = extraireEtudiantId(token);
+    if (id == null) return null;
+    final e = await _prisma.etudiant.findUnique(
+      where: EtudiantWhereUniqueInput(id: id),
+    );
+    if (e == null) return null;
+    return {'id': e.id, 'solde': e.solde ?? 0, 'matricule': e.matricule};
   }
 
   static int? extraireEtudiantId(String token) {

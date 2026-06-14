@@ -2,7 +2,12 @@ import 'dart:convert';
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
 import 'package:backend/services/service_auth.dart';
-import 'package:backend/middlewares/auth_middleware.dart';
+
+int? _extraireId(Request req) {
+  final entete = req.headers['authorization'] ?? '';
+  if (!entete.startsWith('Bearer ')) return null;
+  return ServiceAuth.extraireEtudiantId(entete.substring(7));
+}
 
 Router authRoutes(ServiceAuth serviceAuth) {
   final router = Router();
@@ -36,7 +41,12 @@ Router authRoutes(ServiceAuth serviceAuth) {
   });
 
   router.post('/verifier-pin', (Request req) async {
-    final etudiantId = req.etudiantId;
+    final etudiantId = _extraireId(req);
+    if (etudiantId == null) {
+      return Response(401,
+          body: jsonEncode({'erreur': 'Token manquant ou invalide'}),
+          headers: {'content-type': 'application/json'});
+    }
     final corps = jsonDecode(await req.readAsString()) as Map<String, dynamic>;
     final codeSecret = corps['code_secret'] as String?;
 
@@ -56,7 +66,12 @@ Router authRoutes(ServiceAuth serviceAuth) {
   });
 
   router.put('/changer-code', (Request req) async {
-    final etudiantId = req.etudiantId;
+    final etudiantId = _extraireId(req);
+    if (etudiantId == null) {
+      return Response(401,
+          body: jsonEncode({'erreur': 'Token manquant ou invalide'}),
+          headers: {'content-type': 'application/json'});
+    }
     final corps = jsonDecode(await req.readAsString()) as Map<String, dynamic>;
     final ancienCode = corps['ancien_code'] as String?;
     final nouveauCode = corps['nouveau_code'] as String?;

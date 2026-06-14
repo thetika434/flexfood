@@ -6,7 +6,6 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  
 
 }
 
@@ -18,6 +17,7 @@ model Etudiant {
   solde        Int           @default(0)
   codeSecret   String        @map("code_secret") @db.VarChar(100)
   codeQr       String        @unique @map("code_qr") @db.VarChar(100)
+  role         String        @default("etudiant") @db.VarChar(20)
   transactions Transaction[]
   sessions     Session[]
 
@@ -32,7 +32,7 @@ model Transaction {
   dateHeure            DateTime  @default(now()) @map("date_heure")
   etudiantId           Int       @map("etudiant_id")
   autrePartiMatricule  String?   @map("autre_parti_matricule") @db.VarChar(20)
-  service              String?   @db.VarChar(10)
+  service              String?   @db.VarChar(20)
   etudiant             Etudiant  @relation(fields: [etudiantId], references: [id])
 
   @@map("transactions")

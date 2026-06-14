@@ -176,13 +176,13 @@ class _PageScannerQREtat extends State<PageScannerQR> {
     unawaited(_controleur.start());
   }
 
-  // Fonctionne avec 25-ESATIC0761DG ET 25-ESATIC-0045
+  // Format QR : FLEXFOOD-<matricule>-<uuid-36chars>
+  // UUID = toujours 36 chars → on retire les 37 derniers (tiret + UUID)
   String? _extraireMatricule(String donneesQR) {
     if (!donneesQR.startsWith('FLEXFOOD-')) return null;
     final sansPrefix = donneesQR.substring('FLEXFOOD-'.length);
-    final dernierTiret = sansPrefix.lastIndexOf('-');
-    if (dernierTiret == -1) return null;
-    return sansPrefix.substring(0, dernierTiret);
+    if (sansPrefix.length <= 37) return null;
+    return sansPrefix.substring(0, sansPrefix.length - 37);
   }
 
   void _afficherMessage(String message) {

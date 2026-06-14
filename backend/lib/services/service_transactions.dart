@@ -1,6 +1,8 @@
+import 'package:uuid/uuid.dart';
 import 'package:orm/orm.dart';
 import 'package:backend/generated/prisma/client.dart';
 import 'package:backend/generated/prisma/prisma.dart';
+import 'package:backend/websocket/gestionnaire_ws.dart';
 
 class ServiceTransactions {
   ServiceTransactions(this._prisma);
@@ -17,18 +19,35 @@ class ServiceTransactions {
       ),
     );
 
-    return transactions
-        .map(
-          (t) => {
-            'id': t.id,
-            'type': t.type,
-            'montant': t.montant,
-            'dateHeure': t.dateHeure?.toIso8601String(),
-            'autrePartiMatricule': t.autrePartiMatricule,
-            'service': t.service,
-          },
-        )
-        .toList();
+    // Cache matricule → "Prénom Nom" pour éviter des requêtes en double
+    final Map<String, String> cacheNoms = {};
+
+    final result = <Map<String, dynamic>>[];
+    for (final t in transactions) {
+      String? autrePartiNom;
+      if (t.autrePartiMatricule != null) {
+        if (!cacheNoms.containsKey(t.autrePartiMatricule)) {
+          final autre = await _prisma.etudiant.findUnique(
+            where: EtudiantWhereUniqueInput(matricule: t.autrePartiMatricule),
+          );
+          if (autre != null) {
+            cacheNoms[t.autrePartiMatricule!] =
+                '${autre.prenom} ${autre.nom}';
+          }
+        }
+        autrePartiNom = cacheNoms[t.autrePartiMatricule];
+      }
+      result.add({
+        'id': t.id,
+        'type': t.type,
+        'montant': t.montant,
+        'dateHeure': t.dateHeure?.toIso8601String(),
+        'autrePartiMatricule': t.autrePartiMatricule,
+        'autrePartiNom': autrePartiNom,
+        'service': t.service,
+      });
+    }
+    return result;
   }
 
   Future<Map<String, dynamic>> effectuerTransfert(
@@ -41,6 +60,15 @@ class ServiceTransactions {
     );
     if (emetteur == null) throw Exception('Émetteur introuvable');
 
+    final roleRows = await _prisma.$raw.query(
+      'SELECT role FROM etudiants WHERE id = \$1',
+      [etudiantEmetteurId],
+    );
+    final role = roleRows.isNotEmpty
+        ? (roleRows.first['role'] as String? ?? 'etudiant')
+        : 'etudiant';
+    if (role == 'enseignant') throw EnseignantNePeutPasTransfererException();
+
     if ((emetteur.solde ?? 0) < montant) {
       throw SoldeInsuffisantException();
     }
@@ -51,8 +79,8 @@ class ServiceTransactions {
     if (destinataire == null) throw Exception('Destinataire introuvable');
 
     final maintenant = DateTime.now();
-    final idEnvoye = '#${_genererIdTransaction()}';
-    final idRecu = '#${_genererIdTransaction()}';
+    final idEnvoye = _genererIdTransaction();
+    final idRecu = _genererIdTransaction();
 
     // Bloc atomique : soit tout réussit, soit tout est annulé
     await _prisma.$transaction((tx) async {
@@ -105,25 +133,30 @@ class ServiceTransactions {
       );
     });
 
+    // Notifier les deux étudiants en temps réel
+    GestionnaireWS.notifierSolde(etudiantEmetteurId, (emetteur.solde ?? 0) - montant);
+    GestionnaireWS.notifierSolde(destinataire.id!, (destinataire.solde ?? 0) + montant);
+
     return {
       'id': idEnvoye,
       'type': 'transfert_envoye',
       'montant': -montant,
       'dateHeure': maintenant.toIso8601String(),
       'autrePartiMatricule': matriculeDestinataire,
+      'autrePartiNom': '${destinataire.prenom} ${destinataire.nom}',
     };
   }
 
-  int _compteur = 0;
-
-  String _genererIdTransaction() {
-    _compteur++;
-    final ms = DateTime.now().millisecondsSinceEpoch;
-    return (ms * 10 + _compteur % 10).toString().substring(6);
-  }
+  final _uuid = const Uuid();
+  String _genererIdTransaction() => _uuid.v4();
 }
 
 class SoldeInsuffisantException implements Exception {
   @override
   String toString() => 'Solde insuffisant';
+}
+
+class EnseignantNePeutPasTransfererException implements Exception {
+  @override
+  String toString() => 'Les enseignants ne peuvent pas effectuer de transferts';
 }

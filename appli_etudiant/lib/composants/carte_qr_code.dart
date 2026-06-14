@@ -16,7 +16,9 @@ class CarteQRCode extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return GestureDetector(
+      onTap: onScannerAppui,
+      child: Container(
       height: 210,
       decoration: BoxDecoration(
         color: Couleurs.vertCarte,
@@ -56,21 +58,18 @@ class CarteQRCode extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  GestureDetector(
-                    onTap: onScannerAppui,
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(Icons.camera_alt,
-                            color: Couleurs.blanc, size: 14),
-                        const SizedBox(width: 4),
-                        Text(
-                          'Scanner',
-                          style:
-                              StylesTexte.corps.copyWith(color: Couleurs.blanc),
-                        ),
-                      ],
-                    ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.camera_alt,
+                          color: Couleurs.blanc, size: 14),
+                      const SizedBox(width: 4),
+                      Text(
+                        'Scanner',
+                        style:
+                            StylesTexte.corps.copyWith(color: Couleurs.blanc),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -78,6 +77,7 @@ class CarteQRCode extends StatelessWidget {
           ],
         ),
       ),
+    ),
     );
   }
 }
