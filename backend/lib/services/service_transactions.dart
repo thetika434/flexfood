@@ -60,6 +60,15 @@ class ServiceTransactions {
     );
     if (emetteur == null) throw Exception('Émetteur introuvable');
 
+    final roleRows = await _prisma.$raw.query(
+      'SELECT role FROM etudiants WHERE id = \$1',
+      [etudiantEmetteurId],
+    );
+    final role = roleRows.isNotEmpty
+        ? (roleRows.first['role'] as String? ?? 'etudiant')
+        : 'etudiant';
+    if (role == 'enseignant') throw EnseignantNePeutPasTransfererException();
+
     if ((emetteur.solde ?? 0) < montant) {
       throw SoldeInsuffisantException();
     }
@@ -145,4 +154,9 @@ class ServiceTransactions {
 class SoldeInsuffisantException implements Exception {
   @override
   String toString() => 'Solde insuffisant';
+}
+
+class EnseignantNePeutPasTransfererException implements Exception {
+  @override
+  String toString() => 'Les enseignants ne peuvent pas effectuer de transferts';
 }
