@@ -458,9 +458,9 @@ class StringNullableFilter
   };
 }
 
-class EtudiantScalarRelationFilter
+class EtudiantRelationFilter
     implements _i1.JsonConvertible<Map<String, dynamic>> {
-  const EtudiantScalarRelationFilter({this.$is, this.isNot});
+  const EtudiantRelationFilter({this.$is, this.isNot});
 
   final _i2.EtudiantWhereInput? $is;
 
@@ -522,10 +522,7 @@ class TransactionWhereInput
   >?
   service;
 
-  final _i1.PrismaUnion<
-    _i2.EtudiantScalarRelationFilter,
-    _i2.EtudiantWhereInput
-  >?
+  final _i1.PrismaUnion<_i2.EtudiantRelationFilter, _i2.EtudiantWhereInput>?
   etudiant;
 
   @override
@@ -586,10 +583,7 @@ class SessionWhereInput implements _i1.JsonConvertible<Map<String, dynamic>> {
 
   final _i1.PrismaUnion<_i2.DateTimeFilter, DateTime>? dateExpiration;
 
-  final _i1.PrismaUnion<
-    _i2.EtudiantScalarRelationFilter,
-    _i2.EtudiantWhereInput
-  >?
+  final _i1.PrismaUnion<_i2.EtudiantRelationFilter, _i2.EtudiantWhereInput>?
   etudiant;
 
   @override
@@ -631,6 +625,7 @@ class EtudiantWhereInput implements _i1.JsonConvertible<Map<String, dynamic>> {
     this.solde,
     this.codeSecret,
     this.codeQr,
+    this.role,
     this.transactions,
     this.sessions,
   });
@@ -663,6 +658,8 @@ class EtudiantWhereInput implements _i1.JsonConvertible<Map<String, dynamic>> {
 
   final _i1.PrismaUnion<_i2.StringFilter, String>? codeQr;
 
+  final _i1.PrismaUnion<_i2.StringFilter, String>? role;
+
   final _i2.TransactionListRelationFilter? transactions;
 
   final _i2.SessionListRelationFilter? sessions;
@@ -679,6 +676,7 @@ class EtudiantWhereInput implements _i1.JsonConvertible<Map<String, dynamic>> {
     'solde': solde,
     'codeSecret': codeSecret,
     'codeQr': codeQr,
+    'role': role,
     'transactions': transactions,
     'sessions': sessions,
   };
@@ -697,6 +695,7 @@ class EtudiantWhereUniqueInput
     this.prenom,
     this.solde,
     this.codeSecret,
+    this.role,
     this.transactions,
     this.sessions,
   });
@@ -729,6 +728,8 @@ class EtudiantWhereUniqueInput
 
   final _i1.PrismaUnion<_i2.StringFilter, String>? codeSecret;
 
+  final _i1.PrismaUnion<_i2.StringFilter, String>? role;
+
   final _i2.TransactionListRelationFilter? transactions;
 
   final _i2.SessionListRelationFilter? sessions;
@@ -745,6 +746,7 @@ class EtudiantWhereUniqueInput
     'prenom': prenom,
     'solde': solde,
     'codeSecret': codeSecret,
+    'role': role,
     'transactions': transactions,
     'sessions': sessions,
   };
@@ -832,6 +834,7 @@ class EtudiantOrderByWithRelationInput
     this.solde,
     this.codeSecret,
     this.codeQr,
+    this.role,
     this.transactions,
     this.sessions,
   });
@@ -850,6 +853,8 @@ class EtudiantOrderByWithRelationInput
 
   final _i2.SortOrder? codeQr;
 
+  final _i2.SortOrder? role;
+
   final _i2.TransactionOrderByRelationAggregateInput? transactions;
 
   final _i2.SessionOrderByRelationAggregateInput? sessions;
@@ -863,6 +868,7 @@ class EtudiantOrderByWithRelationInput
     'solde': solde,
     'codeSecret': codeSecret,
     'codeQr': codeQr,
+    'role': role,
     'transactions': transactions,
     'sessions': sessions,
   };
@@ -962,10 +968,7 @@ class TransactionWhereUniqueInput
   >?
   service;
 
-  final _i1.PrismaUnion<
-    _i2.EtudiantScalarRelationFilter,
-    _i2.EtudiantWhereInput
-  >?
+  final _i1.PrismaUnion<_i2.EtudiantRelationFilter, _i2.EtudiantWhereInput>?
   etudiant;
 
   @override
@@ -1157,10 +1160,7 @@ class SessionWhereUniqueInput
 
   final _i1.PrismaUnion<_i2.DateTimeFilter, DateTime>? dateExpiration;
 
-  final _i1.PrismaUnion<
-    _i2.EtudiantScalarRelationFilter,
-    _i2.EtudiantWhereInput
-  >?
+  final _i1.PrismaUnion<_i2.EtudiantRelationFilter, _i2.EtudiantWhereInput>?
   etudiant;
 
   @override
@@ -1329,6 +1329,7 @@ class EtudiantSelect implements _i1.JsonConvertible<Map<String, dynamic>> {
     this.solde,
     this.codeSecret,
     this.codeQr,
+    this.role,
     this.transactions,
     this.sessions,
     this.$count,
@@ -1348,6 +1349,8 @@ class EtudiantSelect implements _i1.JsonConvertible<Map<String, dynamic>> {
 
   final bool? codeQr;
 
+  final bool? role;
+
   final _i1.PrismaUnion<bool, _i2.EtudiantTransactionsArgs>? transactions;
 
   final _i1.PrismaUnion<bool, _i2.EtudiantSessionsArgs>? sessions;
@@ -1363,6 +1366,7 @@ class EtudiantSelect implements _i1.JsonConvertible<Map<String, dynamic>> {
     'solde': solde,
     'codeSecret': codeSecret,
     'codeQr': codeQr,
+    'role': role,
     'transactions': transactions,
     'sessions': sessions,
     '_count': $count,
@@ -1376,7 +1380,8 @@ enum EtudiantScalar<T> implements _i1.PrismaEnum, _i1.Reference<T> {
   prenom<String>('prenom', 'Etudiant'),
   solde<int>('solde', 'Etudiant'),
   codeSecret<String>('codeSecret', 'Etudiant'),
-  codeQr<String>('codeQr', 'Etudiant');
+  codeQr<String>('codeQr', 'Etudiant'),
+  role<String>('role', 'Etudiant');
 
   const EtudiantScalar(this.name, this.model);
 
@@ -1729,6 +1734,7 @@ class EtudiantCreateInput implements _i1.JsonConvertible<Map<String, dynamic>> {
     this.solde,
     required this.codeSecret,
     required this.codeQr,
+    this.role,
     this.transactions,
     this.sessions,
   });
@@ -1745,6 +1751,8 @@ class EtudiantCreateInput implements _i1.JsonConvertible<Map<String, dynamic>> {
 
   final String codeQr;
 
+  final String? role;
+
   final _i2.TransactionCreateNestedManyWithoutEtudiantInput? transactions;
 
   final _i2.SessionCreateNestedManyWithoutEtudiantInput? sessions;
@@ -1757,6 +1765,7 @@ class EtudiantCreateInput implements _i1.JsonConvertible<Map<String, dynamic>> {
     'solde': solde,
     'codeSecret': codeSecret,
     'codeQr': codeQr,
+    'role': role,
     'transactions': transactions,
     'sessions': sessions,
   };
@@ -1860,6 +1869,7 @@ class EtudiantUncheckedCreateInput
     this.solde,
     required this.codeSecret,
     required this.codeQr,
+    this.role,
     this.transactions,
     this.sessions,
   });
@@ -1878,6 +1888,8 @@ class EtudiantUncheckedCreateInput
 
   final String codeQr;
 
+  final String? role;
+
   final _i2.TransactionUncheckedCreateNestedManyWithoutEtudiantInput?
   transactions;
 
@@ -1892,6 +1904,7 @@ class EtudiantUncheckedCreateInput
     'solde': solde,
     'codeSecret': codeSecret,
     'codeQr': codeQr,
+    'role': role,
     'transactions': transactions,
     'sessions': sessions,
   };
@@ -1918,6 +1931,7 @@ class EtudiantCreateManyInput
     this.solde,
     required this.codeSecret,
     required this.codeQr,
+    this.role,
   });
 
   final int? id;
@@ -1934,6 +1948,8 @@ class EtudiantCreateManyInput
 
   final String codeQr;
 
+  final String? role;
+
   @override
   Map<String, dynamic> toJson() => {
     'id': id,
@@ -1943,6 +1959,7 @@ class EtudiantCreateManyInput
     'solde': solde,
     'codeSecret': codeSecret,
     'codeQr': codeQr,
+    'role': role,
   };
 }
 
@@ -1956,6 +1973,7 @@ class CreateManyEtudiantAndReturnOutputTypeSelect
     this.solde,
     this.codeSecret,
     this.codeQr,
+    this.role,
   });
 
   final bool? id;
@@ -1972,6 +1990,8 @@ class CreateManyEtudiantAndReturnOutputTypeSelect
 
   final bool? codeQr;
 
+  final bool? role;
+
   @override
   Map<String, dynamic> toJson() => {
     'id': id,
@@ -1981,6 +2001,7 @@ class CreateManyEtudiantAndReturnOutputTypeSelect
     'solde': solde,
     'codeSecret': codeSecret,
     'codeQr': codeQr,
+    'role': role,
   };
 }
 
@@ -2774,6 +2795,7 @@ class EtudiantUpdateInput implements _i1.JsonConvertible<Map<String, dynamic>> {
     this.solde,
     this.codeSecret,
     this.codeQr,
+    this.role,
     this.transactions,
     this.sessions,
   });
@@ -2792,6 +2814,8 @@ class EtudiantUpdateInput implements _i1.JsonConvertible<Map<String, dynamic>> {
 
   final _i1.PrismaUnion<String, _i2.StringFieldUpdateOperationsInput>? codeQr;
 
+  final _i1.PrismaUnion<String, _i2.StringFieldUpdateOperationsInput>? role;
+
   final _i2.TransactionUpdateManyWithoutEtudiantNestedInput? transactions;
 
   final _i2.SessionUpdateManyWithoutEtudiantNestedInput? sessions;
@@ -2804,6 +2828,7 @@ class EtudiantUpdateInput implements _i1.JsonConvertible<Map<String, dynamic>> {
     'solde': solde,
     'codeSecret': codeSecret,
     'codeQr': codeQr,
+    'role': role,
     'transactions': transactions,
     'sessions': sessions,
   };
@@ -3019,6 +3044,7 @@ class EtudiantUncheckedUpdateInput
     this.solde,
     this.codeSecret,
     this.codeQr,
+    this.role,
     this.transactions,
     this.sessions,
   });
@@ -3039,6 +3065,8 @@ class EtudiantUncheckedUpdateInput
 
   final _i1.PrismaUnion<String, _i2.StringFieldUpdateOperationsInput>? codeQr;
 
+  final _i1.PrismaUnion<String, _i2.StringFieldUpdateOperationsInput>? role;
+
   final _i2.TransactionUncheckedUpdateManyWithoutEtudiantNestedInput?
   transactions;
 
@@ -3053,6 +3081,7 @@ class EtudiantUncheckedUpdateInput
     'solde': solde,
     'codeSecret': codeSecret,
     'codeQr': codeQr,
+    'role': role,
     'transactions': transactions,
     'sessions': sessions,
   };
@@ -3067,6 +3096,7 @@ class EtudiantUpdateManyMutationInput
     this.solde,
     this.codeSecret,
     this.codeQr,
+    this.role,
   });
 
   final _i1.PrismaUnion<String, _i2.StringFieldUpdateOperationsInput>?
@@ -3083,6 +3113,8 @@ class EtudiantUpdateManyMutationInput
 
   final _i1.PrismaUnion<String, _i2.StringFieldUpdateOperationsInput>? codeQr;
 
+  final _i1.PrismaUnion<String, _i2.StringFieldUpdateOperationsInput>? role;
+
   @override
   Map<String, dynamic> toJson() => {
     'matricule': matricule,
@@ -3091,6 +3123,7 @@ class EtudiantUpdateManyMutationInput
     'solde': solde,
     'codeSecret': codeSecret,
     'codeQr': codeQr,
+    'role': role,
   };
 }
 
@@ -3104,6 +3137,7 @@ class EtudiantUncheckedUpdateManyInput
     this.solde,
     this.codeSecret,
     this.codeQr,
+    this.role,
   });
 
   final _i1.PrismaUnion<int, _i2.IntFieldUpdateOperationsInput>? id;
@@ -3122,43 +3156,7 @@ class EtudiantUncheckedUpdateManyInput
 
   final _i1.PrismaUnion<String, _i2.StringFieldUpdateOperationsInput>? codeQr;
 
-  @override
-  Map<String, dynamic> toJson() => {
-    'id': id,
-    'matricule': matricule,
-    'nom': nom,
-    'prenom': prenom,
-    'solde': solde,
-    'codeSecret': codeSecret,
-    'codeQr': codeQr,
-  };
-}
-
-class UpdateManyEtudiantAndReturnOutputTypeSelect
-    implements _i1.JsonConvertible<Map<String, dynamic>> {
-  const UpdateManyEtudiantAndReturnOutputTypeSelect({
-    this.id,
-    this.matricule,
-    this.nom,
-    this.prenom,
-    this.solde,
-    this.codeSecret,
-    this.codeQr,
-  });
-
-  final bool? id;
-
-  final bool? matricule;
-
-  final bool? nom;
-
-  final bool? prenom;
-
-  final bool? solde;
-
-  final bool? codeSecret;
-
-  final bool? codeQr;
+  final _i1.PrismaUnion<String, _i2.StringFieldUpdateOperationsInput>? role;
 
   @override
   Map<String, dynamic> toJson() => {
@@ -3169,6 +3167,7 @@ class UpdateManyEtudiantAndReturnOutputTypeSelect
     'solde': solde,
     'codeSecret': codeSecret,
     'codeQr': codeQr,
+    'role': role,
   };
 }
 
@@ -3181,6 +3180,7 @@ class EtudiantCountAggregateOutputType {
     this.solde,
     this.codeSecret,
     this.codeQr,
+    this.role,
     this.$all,
   });
 
@@ -3193,6 +3193,7 @@ class EtudiantCountAggregateOutputType {
         solde: json['solde'],
         codeSecret: json['codeSecret'],
         codeQr: json['codeQr'],
+        role: json['role'],
         $all: json['_all'],
       );
 
@@ -3210,6 +3211,8 @@ class EtudiantCountAggregateOutputType {
 
   final int? codeQr;
 
+  final int? role;
+
   final int? $all;
 
   Map<String, dynamic> toJson() => {
@@ -3220,6 +3223,7 @@ class EtudiantCountAggregateOutputType {
     'solde': solde,
     'codeSecret': codeSecret,
     'codeQr': codeQr,
+    'role': role,
     '_all': $all,
   };
 }
@@ -3259,6 +3263,7 @@ class EtudiantMinAggregateOutputType {
     this.solde,
     this.codeSecret,
     this.codeQr,
+    this.role,
   });
 
   factory EtudiantMinAggregateOutputType.fromJson(Map json) =>
@@ -3270,6 +3275,7 @@ class EtudiantMinAggregateOutputType {
         solde: json['solde'],
         codeSecret: json['codeSecret'],
         codeQr: json['codeQr'],
+        role: json['role'],
       );
 
   final int? id;
@@ -3286,6 +3292,8 @@ class EtudiantMinAggregateOutputType {
 
   final String? codeQr;
 
+  final String? role;
+
   Map<String, dynamic> toJson() => {
     'id': id,
     'matricule': matricule,
@@ -3294,6 +3302,7 @@ class EtudiantMinAggregateOutputType {
     'solde': solde,
     'codeSecret': codeSecret,
     'codeQr': codeQr,
+    'role': role,
   };
 }
 
@@ -3306,6 +3315,7 @@ class EtudiantMaxAggregateOutputType {
     this.solde,
     this.codeSecret,
     this.codeQr,
+    this.role,
   });
 
   factory EtudiantMaxAggregateOutputType.fromJson(Map json) =>
@@ -3317,6 +3327,7 @@ class EtudiantMaxAggregateOutputType {
         solde: json['solde'],
         codeSecret: json['codeSecret'],
         codeQr: json['codeQr'],
+        role: json['role'],
       );
 
   final int? id;
@@ -3333,6 +3344,8 @@ class EtudiantMaxAggregateOutputType {
 
   final String? codeQr;
 
+  final String? role;
+
   Map<String, dynamic> toJson() => {
     'id': id,
     'matricule': matricule,
@@ -3341,6 +3354,7 @@ class EtudiantMaxAggregateOutputType {
     'solde': solde,
     'codeSecret': codeSecret,
     'codeQr': codeQr,
+    'role': role,
   };
 }
 
@@ -3353,6 +3367,7 @@ class EtudiantGroupByOutputType {
     this.solde,
     this.codeSecret,
     this.codeQr,
+    this.role,
     this.$count,
     this.$avg,
     this.$sum,
@@ -3369,6 +3384,7 @@ class EtudiantGroupByOutputType {
         solde: json['solde'],
         codeSecret: json['codeSecret'],
         codeQr: json['codeQr'],
+        role: json['role'],
         $count: json['_count'] is Map
             ? _i2.EtudiantCountAggregateOutputType.fromJson(json['_count'])
             : null,
@@ -3400,6 +3416,8 @@ class EtudiantGroupByOutputType {
 
   final String? codeQr;
 
+  final String? role;
+
   final _i2.EtudiantCountAggregateOutputType? $count;
 
   final _i2.EtudiantAvgAggregateOutputType? $avg;
@@ -3418,6 +3436,7 @@ class EtudiantGroupByOutputType {
     'solde': solde,
     'codeSecret': codeSecret,
     'codeQr': codeQr,
+    'role': role,
     '_count': $count?.toJson(),
     '_avg': $avg?.toJson(),
     '_sum': $sum?.toJson(),
@@ -3436,6 +3455,7 @@ class EtudiantCountOrderByAggregateInput
     this.solde,
     this.codeSecret,
     this.codeQr,
+    this.role,
   });
 
   final _i2.SortOrder? id;
@@ -3452,6 +3472,8 @@ class EtudiantCountOrderByAggregateInput
 
   final _i2.SortOrder? codeQr;
 
+  final _i2.SortOrder? role;
+
   @override
   Map<String, dynamic> toJson() => {
     'id': id,
@@ -3461,6 +3483,7 @@ class EtudiantCountOrderByAggregateInput
     'solde': solde,
     'codeSecret': codeSecret,
     'codeQr': codeQr,
+    'role': role,
   };
 }
 
@@ -3486,6 +3509,7 @@ class EtudiantMaxOrderByAggregateInput
     this.solde,
     this.codeSecret,
     this.codeQr,
+    this.role,
   });
 
   final _i2.SortOrder? id;
@@ -3502,6 +3526,8 @@ class EtudiantMaxOrderByAggregateInput
 
   final _i2.SortOrder? codeQr;
 
+  final _i2.SortOrder? role;
+
   @override
   Map<String, dynamic> toJson() => {
     'id': id,
@@ -3511,6 +3537,7 @@ class EtudiantMaxOrderByAggregateInput
     'solde': solde,
     'codeSecret': codeSecret,
     'codeQr': codeQr,
+    'role': role,
   };
 }
 
@@ -3524,6 +3551,7 @@ class EtudiantMinOrderByAggregateInput
     this.solde,
     this.codeSecret,
     this.codeQr,
+    this.role,
   });
 
   final _i2.SortOrder? id;
@@ -3540,6 +3568,8 @@ class EtudiantMinOrderByAggregateInput
 
   final _i2.SortOrder? codeQr;
 
+  final _i2.SortOrder? role;
+
   @override
   Map<String, dynamic> toJson() => {
     'id': id,
@@ -3549,6 +3579,7 @@ class EtudiantMinOrderByAggregateInput
     'solde': solde,
     'codeSecret': codeSecret,
     'codeQr': codeQr,
+    'role': role,
   };
 }
 
@@ -3574,6 +3605,7 @@ class EtudiantOrderByWithAggregationInput
     this.solde,
     this.codeSecret,
     this.codeQr,
+    this.role,
     this.$count,
     this.$avg,
     this.$max,
@@ -3595,6 +3627,8 @@ class EtudiantOrderByWithAggregationInput
 
   final _i2.SortOrder? codeQr;
 
+  final _i2.SortOrder? role;
+
   final _i2.EtudiantCountOrderByAggregateInput? $count;
 
   final _i2.EtudiantAvgOrderByAggregateInput? $avg;
@@ -3614,6 +3648,7 @@ class EtudiantOrderByWithAggregationInput
     'solde': solde,
     'codeSecret': codeSecret,
     'codeQr': codeQr,
+    'role': role,
     '_count': $count,
     '_avg': $avg,
     '_max': $max,
@@ -3939,6 +3974,7 @@ class EtudiantScalarWhereWithAggregatesInput
     this.solde,
     this.codeSecret,
     this.codeQr,
+    this.role,
   });
 
   final _i1.PrismaUnion<
@@ -3969,6 +4005,8 @@ class EtudiantScalarWhereWithAggregatesInput
 
   final _i1.PrismaUnion<_i2.StringWithAggregatesFilter, String>? codeQr;
 
+  final _i1.PrismaUnion<_i2.StringWithAggregatesFilter, String>? role;
+
   @override
   Map<String, dynamic> toJson() => {
     'AND': AND,
@@ -3981,6 +4019,7 @@ class EtudiantScalarWhereWithAggregatesInput
     'solde': solde,
     'codeSecret': codeSecret,
     'codeQr': codeQr,
+    'role': role,
   };
 }
 
@@ -3994,6 +4033,7 @@ class EtudiantCountAggregateOutputTypeSelect
     this.solde,
     this.codeSecret,
     this.codeQr,
+    this.role,
     this.$all,
   });
 
@@ -4011,6 +4051,8 @@ class EtudiantCountAggregateOutputTypeSelect
 
   final bool? codeQr;
 
+  final bool? role;
+
   final bool? $all;
 
   @override
@@ -4022,6 +4064,7 @@ class EtudiantCountAggregateOutputTypeSelect
     'solde': solde,
     'codeSecret': codeSecret,
     'codeQr': codeQr,
+    'role': role,
     '_all': $all,
   };
 }
@@ -4090,6 +4133,7 @@ class EtudiantMinAggregateOutputTypeSelect
     this.solde,
     this.codeSecret,
     this.codeQr,
+    this.role,
   });
 
   final bool? id;
@@ -4106,6 +4150,8 @@ class EtudiantMinAggregateOutputTypeSelect
 
   final bool? codeQr;
 
+  final bool? role;
+
   @override
   Map<String, dynamic> toJson() => {
     'id': id,
@@ -4115,6 +4161,7 @@ class EtudiantMinAggregateOutputTypeSelect
     'solde': solde,
     'codeSecret': codeSecret,
     'codeQr': codeQr,
+    'role': role,
   };
 }
 
@@ -4138,6 +4185,7 @@ class EtudiantMaxAggregateOutputTypeSelect
     this.solde,
     this.codeSecret,
     this.codeQr,
+    this.role,
   });
 
   final bool? id;
@@ -4154,6 +4202,8 @@ class EtudiantMaxAggregateOutputTypeSelect
 
   final bool? codeQr;
 
+  final bool? role;
+
   @override
   Map<String, dynamic> toJson() => {
     'id': id,
@@ -4163,6 +4213,7 @@ class EtudiantMaxAggregateOutputTypeSelect
     'solde': solde,
     'codeSecret': codeSecret,
     'codeQr': codeQr,
+    'role': role,
   };
 }
 
@@ -4186,6 +4237,7 @@ class EtudiantGroupByOutputTypeSelect
     this.solde,
     this.codeSecret,
     this.codeQr,
+    this.role,
     this.$count,
     this.$avg,
     this.$sum,
@@ -4207,6 +4259,8 @@ class EtudiantGroupByOutputTypeSelect
 
   final bool? codeQr;
 
+  final bool? role;
+
   final _i1.PrismaUnion<bool, _i2.EtudiantGroupByOutputTypeCountArgs>? $count;
 
   final _i1.PrismaUnion<bool, _i2.EtudiantGroupByOutputTypeAvgArgs>? $avg;
@@ -4226,6 +4280,7 @@ class EtudiantGroupByOutputTypeSelect
     'solde': solde,
     'codeSecret': codeSecret,
     'codeQr': codeQr,
+    'role': role,
     '_count': $count,
     '_avg': $avg,
     '_sum': $sum,
@@ -4369,6 +4424,7 @@ class EtudiantCreateWithoutTransactionsInput
     this.solde,
     required this.codeSecret,
     required this.codeQr,
+    this.role,
     this.sessions,
   });
 
@@ -4384,6 +4440,8 @@ class EtudiantCreateWithoutTransactionsInput
 
   final String codeQr;
 
+  final String? role;
+
   final _i2.SessionCreateNestedManyWithoutEtudiantInput? sessions;
 
   @override
@@ -4394,6 +4452,7 @@ class EtudiantCreateWithoutTransactionsInput
     'solde': solde,
     'codeSecret': codeSecret,
     'codeQr': codeQr,
+    'role': role,
     'sessions': sessions,
   };
 }
@@ -4408,6 +4467,7 @@ class EtudiantUncheckedCreateWithoutTransactionsInput
     this.solde,
     required this.codeSecret,
     required this.codeQr,
+    this.role,
     this.sessions,
   });
 
@@ -4425,6 +4485,8 @@ class EtudiantUncheckedCreateWithoutTransactionsInput
 
   final String codeQr;
 
+  final String? role;
+
   final _i2.SessionUncheckedCreateNestedManyWithoutEtudiantInput? sessions;
 
   @override
@@ -4436,6 +4498,7 @@ class EtudiantUncheckedCreateWithoutTransactionsInput
     'solde': solde,
     'codeSecret': codeSecret,
     'codeQr': codeQr,
+    'role': role,
     'sessions': sessions,
   };
 }
@@ -4683,6 +4746,7 @@ class EtudiantUpdateWithoutTransactionsInput
     this.solde,
     this.codeSecret,
     this.codeQr,
+    this.role,
     this.sessions,
   });
 
@@ -4700,6 +4764,8 @@ class EtudiantUpdateWithoutTransactionsInput
 
   final _i1.PrismaUnion<String, _i2.StringFieldUpdateOperationsInput>? codeQr;
 
+  final _i1.PrismaUnion<String, _i2.StringFieldUpdateOperationsInput>? role;
+
   final _i2.SessionUpdateManyWithoutEtudiantNestedInput? sessions;
 
   @override
@@ -4710,6 +4776,7 @@ class EtudiantUpdateWithoutTransactionsInput
     'solde': solde,
     'codeSecret': codeSecret,
     'codeQr': codeQr,
+    'role': role,
     'sessions': sessions,
   };
 }
@@ -4724,6 +4791,7 @@ class EtudiantUncheckedUpdateWithoutTransactionsInput
     this.solde,
     this.codeSecret,
     this.codeQr,
+    this.role,
     this.sessions,
   });
 
@@ -4743,6 +4811,8 @@ class EtudiantUncheckedUpdateWithoutTransactionsInput
 
   final _i1.PrismaUnion<String, _i2.StringFieldUpdateOperationsInput>? codeQr;
 
+  final _i1.PrismaUnion<String, _i2.StringFieldUpdateOperationsInput>? role;
+
   final _i2.SessionUncheckedUpdateManyWithoutEtudiantNestedInput? sessions;
 
   @override
@@ -4754,6 +4824,7 @@ class EtudiantUncheckedUpdateWithoutTransactionsInput
     'solde': solde,
     'codeSecret': codeSecret,
     'codeQr': codeQr,
+    'role': role,
     'sessions': sessions,
   };
 }
@@ -5005,81 +5076,6 @@ class TransactionUncheckedUpdateManyInput
     'autrePartiMatricule': autrePartiMatricule,
     'service': service,
   };
-}
-
-class UpdateManyTransactionAndReturnOutputTypeEtudiantArgs
-    implements _i1.JsonConvertible<Map<String, dynamic>> {
-  const UpdateManyTransactionAndReturnOutputTypeEtudiantArgs({
-    this.select,
-    this.include,
-  });
-
-  final _i2.EtudiantSelect? select;
-
-  final _i2.EtudiantInclude? include;
-
-  @override
-  Map<String, dynamic> toJson() => {'select': select, 'include': include};
-}
-
-class UpdateManyTransactionAndReturnOutputTypeSelect
-    implements _i1.JsonConvertible<Map<String, dynamic>> {
-  const UpdateManyTransactionAndReturnOutputTypeSelect({
-    this.id,
-    this.type,
-    this.montant,
-    this.dateHeure,
-    this.etudiantId,
-    this.autrePartiMatricule,
-    this.service,
-    this.etudiant,
-  });
-
-  final bool? id;
-
-  final bool? type;
-
-  final bool? montant;
-
-  final bool? dateHeure;
-
-  final bool? etudiantId;
-
-  final bool? autrePartiMatricule;
-
-  final bool? service;
-
-  final _i1.PrismaUnion<
-    bool,
-    _i2.UpdateManyTransactionAndReturnOutputTypeEtudiantArgs
-  >?
-  etudiant;
-
-  @override
-  Map<String, dynamic> toJson() => {
-    'id': id,
-    'type': type,
-    'montant': montant,
-    'dateHeure': dateHeure,
-    'etudiantId': etudiantId,
-    'autrePartiMatricule': autrePartiMatricule,
-    'service': service,
-    'etudiant': etudiant,
-  };
-}
-
-class UpdateManyTransactionAndReturnOutputTypeInclude
-    implements _i1.JsonConvertible<Map<String, dynamic>> {
-  const UpdateManyTransactionAndReturnOutputTypeInclude({this.etudiant});
-
-  final _i1.PrismaUnion<
-    bool,
-    _i2.UpdateManyTransactionAndReturnOutputTypeEtudiantArgs
-  >?
-  etudiant;
-
-  @override
-  Map<String, dynamic> toJson() => {'etudiant': etudiant};
 }
 
 class TransactionCountAggregateOutputType {
@@ -6370,6 +6366,7 @@ class EtudiantCreateWithoutSessionsInput
     this.solde,
     required this.codeSecret,
     required this.codeQr,
+    this.role,
     this.transactions,
   });
 
@@ -6385,6 +6382,8 @@ class EtudiantCreateWithoutSessionsInput
 
   final String codeQr;
 
+  final String? role;
+
   final _i2.TransactionCreateNestedManyWithoutEtudiantInput? transactions;
 
   @override
@@ -6395,6 +6394,7 @@ class EtudiantCreateWithoutSessionsInput
     'solde': solde,
     'codeSecret': codeSecret,
     'codeQr': codeQr,
+    'role': role,
     'transactions': transactions,
   };
 }
@@ -6409,6 +6409,7 @@ class EtudiantUncheckedCreateWithoutSessionsInput
     this.solde,
     required this.codeSecret,
     required this.codeQr,
+    this.role,
     this.transactions,
   });
 
@@ -6426,6 +6427,8 @@ class EtudiantUncheckedCreateWithoutSessionsInput
 
   final String codeQr;
 
+  final String? role;
+
   final _i2.TransactionUncheckedCreateNestedManyWithoutEtudiantInput?
   transactions;
 
@@ -6438,6 +6441,7 @@ class EtudiantUncheckedCreateWithoutSessionsInput
     'solde': solde,
     'codeSecret': codeSecret,
     'codeQr': codeQr,
+    'role': role,
     'transactions': transactions,
   };
 }
@@ -6632,6 +6636,7 @@ class EtudiantUpdateWithoutSessionsInput
     this.solde,
     this.codeSecret,
     this.codeQr,
+    this.role,
     this.transactions,
   });
 
@@ -6649,6 +6654,8 @@ class EtudiantUpdateWithoutSessionsInput
 
   final _i1.PrismaUnion<String, _i2.StringFieldUpdateOperationsInput>? codeQr;
 
+  final _i1.PrismaUnion<String, _i2.StringFieldUpdateOperationsInput>? role;
+
   final _i2.TransactionUpdateManyWithoutEtudiantNestedInput? transactions;
 
   @override
@@ -6659,6 +6666,7 @@ class EtudiantUpdateWithoutSessionsInput
     'solde': solde,
     'codeSecret': codeSecret,
     'codeQr': codeQr,
+    'role': role,
     'transactions': transactions,
   };
 }
@@ -6673,6 +6681,7 @@ class EtudiantUncheckedUpdateWithoutSessionsInput
     this.solde,
     this.codeSecret,
     this.codeQr,
+    this.role,
     this.transactions,
   });
 
@@ -6692,6 +6701,8 @@ class EtudiantUncheckedUpdateWithoutSessionsInput
 
   final _i1.PrismaUnion<String, _i2.StringFieldUpdateOperationsInput>? codeQr;
 
+  final _i1.PrismaUnion<String, _i2.StringFieldUpdateOperationsInput>? role;
+
   final _i2.TransactionUncheckedUpdateManyWithoutEtudiantNestedInput?
   transactions;
 
@@ -6704,6 +6715,7 @@ class EtudiantUncheckedUpdateWithoutSessionsInput
     'solde': solde,
     'codeSecret': codeSecret,
     'codeQr': codeQr,
+    'role': role,
     'transactions': transactions,
   };
 }
@@ -6868,69 +6880,6 @@ class SessionUncheckedUpdateManyInput
     'token': token,
     'dateExpiration': dateExpiration,
   };
-}
-
-class UpdateManySessionAndReturnOutputTypeEtudiantArgs
-    implements _i1.JsonConvertible<Map<String, dynamic>> {
-  const UpdateManySessionAndReturnOutputTypeEtudiantArgs({
-    this.select,
-    this.include,
-  });
-
-  final _i2.EtudiantSelect? select;
-
-  final _i2.EtudiantInclude? include;
-
-  @override
-  Map<String, dynamic> toJson() => {'select': select, 'include': include};
-}
-
-class UpdateManySessionAndReturnOutputTypeSelect
-    implements _i1.JsonConvertible<Map<String, dynamic>> {
-  const UpdateManySessionAndReturnOutputTypeSelect({
-    this.id,
-    this.etudiantId,
-    this.token,
-    this.dateExpiration,
-    this.etudiant,
-  });
-
-  final bool? id;
-
-  final bool? etudiantId;
-
-  final bool? token;
-
-  final bool? dateExpiration;
-
-  final _i1.PrismaUnion<
-    bool,
-    _i2.UpdateManySessionAndReturnOutputTypeEtudiantArgs
-  >?
-  etudiant;
-
-  @override
-  Map<String, dynamic> toJson() => {
-    'id': id,
-    'etudiantId': etudiantId,
-    'token': token,
-    'dateExpiration': dateExpiration,
-    'etudiant': etudiant,
-  };
-}
-
-class UpdateManySessionAndReturnOutputTypeInclude
-    implements _i1.JsonConvertible<Map<String, dynamic>> {
-  const UpdateManySessionAndReturnOutputTypeInclude({this.etudiant});
-
-  final _i1.PrismaUnion<
-    bool,
-    _i2.UpdateManySessionAndReturnOutputTypeEtudiantArgs
-  >?
-  etudiant;
-
-  @override
-  Map<String, dynamic> toJson() => {'etudiant': etudiant};
 }
 
 class SessionCountAggregateOutputType {
@@ -8137,40 +8086,6 @@ class AgentUncheckedUpdateManyInput
     >
   >?
   poste;
-
-  @override
-  Map<String, dynamic> toJson() => {
-    'id': id,
-    'matricule': matricule,
-    'nom': nom,
-    'prenom': prenom,
-    'codeSecret': codeSecret,
-    'poste': poste,
-  };
-}
-
-class UpdateManyAgentAndReturnOutputTypeSelect
-    implements _i1.JsonConvertible<Map<String, dynamic>> {
-  const UpdateManyAgentAndReturnOutputTypeSelect({
-    this.id,
-    this.matricule,
-    this.nom,
-    this.prenom,
-    this.codeSecret,
-    this.poste,
-  });
-
-  final bool? id;
-
-  final bool? matricule;
-
-  final bool? nom;
-
-  final bool? prenom;
-
-  final bool? codeSecret;
-
-  final bool? poste;
 
   @override
   Map<String, dynamic> toJson() => {

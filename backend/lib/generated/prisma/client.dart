@@ -319,9 +319,8 @@ class EtudiantDelegate {
     >
     data,
     _i3.EtudiantWhereInput? where,
-    int? limit,
   }) {
-    final args = {'data': data, 'where': where, 'limit': limit};
+    final args = {'data': data, 'where': where};
     final query = _i1.serializeJsonQuery(
       args: args,
       modelName: 'Etudiant',
@@ -337,45 +336,6 @@ class EtudiantDelegate {
       action: 'updateManyEtudiant',
       result: result,
       factory: (e) => _i3.AffectedRowsOutput.fromJson(e),
-    );
-  }
-
-  _i1.ActionClient<Iterable<_i2.UpdateManyEtudiantAndReturnOutputType>>
-  updateManyAndReturn({
-    required _i1.PrismaUnion<
-      _i3.EtudiantUpdateManyMutationInput,
-      _i3.EtudiantUncheckedUpdateManyInput
-    >
-    data,
-    _i3.EtudiantWhereInput? where,
-    int? limit,
-    _i3.UpdateManyEtudiantAndReturnOutputTypeSelect? select,
-  }) {
-    final args = {
-      'data': data,
-      'where': where,
-      'limit': limit,
-      'select': select,
-    };
-    final query = _i1.serializeJsonQuery(
-      args: args,
-      modelName: 'Etudiant',
-      action: _i1.JsonQueryAction.updateManyAndReturn,
-      datamodel: PrismaClient.datamodel,
-    );
-    final result = _client.$engine.request(
-      query,
-      headers: _client.$transaction.headers,
-      transaction: _client.$transaction.transaction,
-    );
-    return _i1.ActionClient<
-      Iterable<_i2.UpdateManyEtudiantAndReturnOutputType>
-    >(
-      action: 'updateManyEtudiantAndReturn',
-      result: result,
-      factory: (values) => (values as Iterable).map(
-        (e) => _i2.UpdateManyEtudiantAndReturnOutputType.fromJson(e),
-      ),
     );
   }
 
@@ -445,9 +405,8 @@ class EtudiantDelegate {
 
   _i1.ActionClient<_i3.AffectedRowsOutput> deleteMany({
     _i3.EtudiantWhereInput? where,
-    int? limit,
   }) {
-    final args = {'where': where, 'limit': limit};
+    final args = {'where': where};
     final query = _i1.serializeJsonQuery(
       args: args,
       modelName: 'Etudiant',
@@ -866,9 +825,8 @@ class TransactionDelegate {
     >
     data,
     _i3.TransactionWhereInput? where,
-    int? limit,
   }) {
-    final args = {'data': data, 'where': where, 'limit': limit};
+    final args = {'data': data, 'where': where};
     final query = _i1.serializeJsonQuery(
       args: args,
       modelName: 'Transaction',
@@ -884,47 +842,6 @@ class TransactionDelegate {
       action: 'updateManyTransaction',
       result: result,
       factory: (e) => _i3.AffectedRowsOutput.fromJson(e),
-    );
-  }
-
-  _i1.ActionClient<Iterable<_i2.UpdateManyTransactionAndReturnOutputType>>
-  updateManyAndReturn({
-    required _i1.PrismaUnion<
-      _i3.TransactionUpdateManyMutationInput,
-      _i3.TransactionUncheckedUpdateManyInput
-    >
-    data,
-    _i3.TransactionWhereInput? where,
-    int? limit,
-    _i3.UpdateManyTransactionAndReturnOutputTypeSelect? select,
-    _i3.UpdateManyTransactionAndReturnOutputTypeInclude? include,
-  }) {
-    final args = {
-      'data': data,
-      'where': where,
-      'limit': limit,
-      'select': select,
-      'include': include,
-    };
-    final query = _i1.serializeJsonQuery(
-      args: args,
-      modelName: 'Transaction',
-      action: _i1.JsonQueryAction.updateManyAndReturn,
-      datamodel: PrismaClient.datamodel,
-    );
-    final result = _client.$engine.request(
-      query,
-      headers: _client.$transaction.headers,
-      transaction: _client.$transaction.transaction,
-    );
-    return _i1.ActionClient<
-      Iterable<_i2.UpdateManyTransactionAndReturnOutputType>
-    >(
-      action: 'updateManyTransactionAndReturn',
-      result: result,
-      factory: (values) => (values as Iterable).map(
-        (e) => _i2.UpdateManyTransactionAndReturnOutputType.fromJson(e),
-      ),
     );
   }
 
@@ -994,9 +911,8 @@ class TransactionDelegate {
 
   _i1.ActionClient<_i3.AffectedRowsOutput> deleteMany({
     _i3.TransactionWhereInput? where,
-    int? limit,
   }) {
-    final args = {'where': where, 'limit': limit};
+    final args = {'where': where};
     final query = _i1.serializeJsonQuery(
       args: args,
       modelName: 'Transaction',
@@ -1413,9 +1329,8 @@ class SessionDelegate {
     >
     data,
     _i3.SessionWhereInput? where,
-    int? limit,
   }) {
-    final args = {'data': data, 'where': where, 'limit': limit};
+    final args = {'data': data, 'where': where};
     final query = _i1.serializeJsonQuery(
       args: args,
       modelName: 'Session',
@@ -1431,45 +1346,6 @@ class SessionDelegate {
       action: 'updateManySession',
       result: result,
       factory: (e) => _i3.AffectedRowsOutput.fromJson(e),
-    );
-  }
-
-  _i1.ActionClient<Iterable<_i2.UpdateManySessionAndReturnOutputType>>
-  updateManyAndReturn({
-    required _i1.PrismaUnion<
-      _i3.SessionUpdateManyMutationInput,
-      _i3.SessionUncheckedUpdateManyInput
-    >
-    data,
-    _i3.SessionWhereInput? where,
-    int? limit,
-    _i3.UpdateManySessionAndReturnOutputTypeSelect? select,
-    _i3.UpdateManySessionAndReturnOutputTypeInclude? include,
-  }) {
-    final args = {
-      'data': data,
-      'where': where,
-      'limit': limit,
-      'select': select,
-      'include': include,
-    };
-    final query = _i1.serializeJsonQuery(
-      args: args,
-      modelName: 'Session',
-      action: _i1.JsonQueryAction.updateManyAndReturn,
-      datamodel: PrismaClient.datamodel,
-    );
-    final result = _client.$engine.request(
-      query,
-      headers: _client.$transaction.headers,
-      transaction: _client.$transaction.transaction,
-    );
-    return _i1.ActionClient<Iterable<_i2.UpdateManySessionAndReturnOutputType>>(
-      action: 'updateManySessionAndReturn',
-      result: result,
-      factory: (values) => (values as Iterable).map(
-        (e) => _i2.UpdateManySessionAndReturnOutputType.fromJson(e),
-      ),
     );
   }
 
@@ -1539,9 +1415,8 @@ class SessionDelegate {
 
   _i1.ActionClient<_i3.AffectedRowsOutput> deleteMany({
     _i3.SessionWhereInput? where,
-    int? limit,
   }) {
-    final args = {'where': where, 'limit': limit};
+    final args = {'where': where};
     final query = _i1.serializeJsonQuery(
       args: args,
       modelName: 'Session',
@@ -1937,9 +1812,8 @@ class AgentDelegate {
     >
     data,
     _i3.AgentWhereInput? where,
-    int? limit,
   }) {
-    final args = {'data': data, 'where': where, 'limit': limit};
+    final args = {'data': data, 'where': where};
     final query = _i1.serializeJsonQuery(
       args: args,
       modelName: 'Agent',
@@ -1955,43 +1829,6 @@ class AgentDelegate {
       action: 'updateManyAgent',
       result: result,
       factory: (e) => _i3.AffectedRowsOutput.fromJson(e),
-    );
-  }
-
-  _i1.ActionClient<Iterable<_i2.UpdateManyAgentAndReturnOutputType>>
-  updateManyAndReturn({
-    required _i1.PrismaUnion<
-      _i3.AgentUpdateManyMutationInput,
-      _i3.AgentUncheckedUpdateManyInput
-    >
-    data,
-    _i3.AgentWhereInput? where,
-    int? limit,
-    _i3.UpdateManyAgentAndReturnOutputTypeSelect? select,
-  }) {
-    final args = {
-      'data': data,
-      'where': where,
-      'limit': limit,
-      'select': select,
-    };
-    final query = _i1.serializeJsonQuery(
-      args: args,
-      modelName: 'Agent',
-      action: _i1.JsonQueryAction.updateManyAndReturn,
-      datamodel: PrismaClient.datamodel,
-    );
-    final result = _client.$engine.request(
-      query,
-      headers: _client.$transaction.headers,
-      transaction: _client.$transaction.transaction,
-    );
-    return _i1.ActionClient<Iterable<_i2.UpdateManyAgentAndReturnOutputType>>(
-      action: 'updateManyAgentAndReturn',
-      result: result,
-      factory: (values) => (values as Iterable).map(
-        (e) => _i2.UpdateManyAgentAndReturnOutputType.fromJson(e),
-      ),
     );
   }
 
@@ -2058,9 +1895,8 @@ class AgentDelegate {
 
   _i1.ActionClient<_i3.AffectedRowsOutput> deleteMany({
     _i3.AgentWhereInput? where,
-    int? limit,
   }) {
-    final args = {'where': where, 'limit': limit};
+    final args = {'where': where};
     final query = _i1.serializeJsonQuery(
       args: args,
       modelName: 'Agent',
@@ -2175,7 +2011,6 @@ class PrismaClient extends _i1.BasePrismaClient<PrismaClient> {
       {
         'name': 'Etudiant',
         'dbName': 'etudiants',
-        'schema': null,
         'fields': [
           {
             'name': 'id',
@@ -2187,7 +2022,6 @@ class PrismaClient extends _i1.BasePrismaClient<PrismaClient> {
             'isReadOnly': false,
             'hasDefaultValue': true,
             'type': 'Int',
-            'nativeType': null,
             'default': {'name': 'autoincrement', 'args': []},
             'isGenerated': false,
             'isUpdatedAt': false,
@@ -2202,10 +2036,6 @@ class PrismaClient extends _i1.BasePrismaClient<PrismaClient> {
             'isReadOnly': false,
             'hasDefaultValue': false,
             'type': 'String',
-            'nativeType': [
-              'VarChar',
-              ['20'],
-            ],
             'isGenerated': false,
             'isUpdatedAt': false,
           },
@@ -2219,10 +2049,6 @@ class PrismaClient extends _i1.BasePrismaClient<PrismaClient> {
             'isReadOnly': false,
             'hasDefaultValue': false,
             'type': 'String',
-            'nativeType': [
-              'VarChar',
-              ['50'],
-            ],
             'isGenerated': false,
             'isUpdatedAt': false,
           },
@@ -2236,10 +2062,6 @@ class PrismaClient extends _i1.BasePrismaClient<PrismaClient> {
             'isReadOnly': false,
             'hasDefaultValue': false,
             'type': 'String',
-            'nativeType': [
-              'VarChar',
-              ['50'],
-            ],
             'isGenerated': false,
             'isUpdatedAt': false,
           },
@@ -2253,7 +2075,6 @@ class PrismaClient extends _i1.BasePrismaClient<PrismaClient> {
             'isReadOnly': false,
             'hasDefaultValue': true,
             'type': 'Int',
-            'nativeType': null,
             'default': 0,
             'isGenerated': false,
             'isUpdatedAt': false,
@@ -2269,10 +2090,6 @@ class PrismaClient extends _i1.BasePrismaClient<PrismaClient> {
             'isReadOnly': false,
             'hasDefaultValue': false,
             'type': 'String',
-            'nativeType': [
-              'VarChar',
-              ['100'],
-            ],
             'isGenerated': false,
             'isUpdatedAt': false,
           },
@@ -2287,10 +2104,20 @@ class PrismaClient extends _i1.BasePrismaClient<PrismaClient> {
             'isReadOnly': false,
             'hasDefaultValue': false,
             'type': 'String',
-            'nativeType': [
-              'VarChar',
-              ['100'],
-            ],
+            'isGenerated': false,
+            'isUpdatedAt': false,
+          },
+          {
+            'name': 'role',
+            'kind': 'scalar',
+            'isList': false,
+            'isRequired': true,
+            'isUnique': false,
+            'isId': false,
+            'isReadOnly': false,
+            'hasDefaultValue': true,
+            'type': 'String',
+            'default': 'etudiant',
             'isGenerated': false,
             'isUpdatedAt': false,
           },
@@ -2304,7 +2131,6 @@ class PrismaClient extends _i1.BasePrismaClient<PrismaClient> {
             'isReadOnly': false,
             'hasDefaultValue': false,
             'type': 'Transaction',
-            'nativeType': null,
             'relationName': 'EtudiantToTransaction',
             'relationFromFields': [],
             'relationToFields': [],
@@ -2321,7 +2147,6 @@ class PrismaClient extends _i1.BasePrismaClient<PrismaClient> {
             'isReadOnly': false,
             'hasDefaultValue': false,
             'type': 'Session',
-            'nativeType': null,
             'relationName': 'EtudiantToSession',
             'relationFromFields': [],
             'relationToFields': [],
@@ -2337,7 +2162,6 @@ class PrismaClient extends _i1.BasePrismaClient<PrismaClient> {
       {
         'name': 'Transaction',
         'dbName': 'transactions',
-        'schema': null,
         'fields': [
           {
             'name': 'id',
@@ -2349,10 +2173,6 @@ class PrismaClient extends _i1.BasePrismaClient<PrismaClient> {
             'isReadOnly': false,
             'hasDefaultValue': false,
             'type': 'String',
-            'nativeType': [
-              'VarChar',
-              ['10'],
-            ],
             'isGenerated': false,
             'isUpdatedAt': false,
           },
@@ -2366,10 +2186,6 @@ class PrismaClient extends _i1.BasePrismaClient<PrismaClient> {
             'isReadOnly': false,
             'hasDefaultValue': false,
             'type': 'String',
-            'nativeType': [
-              'VarChar',
-              ['30'],
-            ],
             'isGenerated': false,
             'isUpdatedAt': false,
           },
@@ -2383,7 +2199,6 @@ class PrismaClient extends _i1.BasePrismaClient<PrismaClient> {
             'isReadOnly': false,
             'hasDefaultValue': false,
             'type': 'Int',
-            'nativeType': null,
             'isGenerated': false,
             'isUpdatedAt': false,
           },
@@ -2398,7 +2213,6 @@ class PrismaClient extends _i1.BasePrismaClient<PrismaClient> {
             'isReadOnly': false,
             'hasDefaultValue': true,
             'type': 'DateTime',
-            'nativeType': null,
             'default': {'name': 'now', 'args': []},
             'isGenerated': false,
             'isUpdatedAt': false,
@@ -2414,7 +2228,6 @@ class PrismaClient extends _i1.BasePrismaClient<PrismaClient> {
             'isReadOnly': true,
             'hasDefaultValue': false,
             'type': 'Int',
-            'nativeType': null,
             'isGenerated': false,
             'isUpdatedAt': false,
           },
@@ -2429,10 +2242,6 @@ class PrismaClient extends _i1.BasePrismaClient<PrismaClient> {
             'isReadOnly': false,
             'hasDefaultValue': false,
             'type': 'String',
-            'nativeType': [
-              'VarChar',
-              ['20'],
-            ],
             'isGenerated': false,
             'isUpdatedAt': false,
           },
@@ -2446,10 +2255,6 @@ class PrismaClient extends _i1.BasePrismaClient<PrismaClient> {
             'isReadOnly': false,
             'hasDefaultValue': false,
             'type': 'String',
-            'nativeType': [
-              'VarChar',
-              ['20'],
-            ],
             'isGenerated': false,
             'isUpdatedAt': false,
           },
@@ -2463,7 +2268,6 @@ class PrismaClient extends _i1.BasePrismaClient<PrismaClient> {
             'isReadOnly': false,
             'hasDefaultValue': false,
             'type': 'Etudiant',
-            'nativeType': null,
             'relationName': 'EtudiantToTransaction',
             'relationFromFields': ['etudiantId'],
             'relationToFields': ['id'],
@@ -2479,7 +2283,6 @@ class PrismaClient extends _i1.BasePrismaClient<PrismaClient> {
       {
         'name': 'Session',
         'dbName': 'sessions',
-        'schema': null,
         'fields': [
           {
             'name': 'id',
@@ -2491,7 +2294,6 @@ class PrismaClient extends _i1.BasePrismaClient<PrismaClient> {
             'isReadOnly': false,
             'hasDefaultValue': true,
             'type': 'Int',
-            'nativeType': null,
             'default': {'name': 'autoincrement', 'args': []},
             'isGenerated': false,
             'isUpdatedAt': false,
@@ -2507,7 +2309,6 @@ class PrismaClient extends _i1.BasePrismaClient<PrismaClient> {
             'isReadOnly': true,
             'hasDefaultValue': false,
             'type': 'Int',
-            'nativeType': null,
             'isGenerated': false,
             'isUpdatedAt': false,
           },
@@ -2521,7 +2322,6 @@ class PrismaClient extends _i1.BasePrismaClient<PrismaClient> {
             'isReadOnly': false,
             'hasDefaultValue': false,
             'type': 'String',
-            'nativeType': null,
             'isGenerated': false,
             'isUpdatedAt': false,
           },
@@ -2536,7 +2336,6 @@ class PrismaClient extends _i1.BasePrismaClient<PrismaClient> {
             'isReadOnly': false,
             'hasDefaultValue': false,
             'type': 'DateTime',
-            'nativeType': null,
             'isGenerated': false,
             'isUpdatedAt': false,
           },
@@ -2550,7 +2349,6 @@ class PrismaClient extends _i1.BasePrismaClient<PrismaClient> {
             'isReadOnly': false,
             'hasDefaultValue': false,
             'type': 'Etudiant',
-            'nativeType': null,
             'relationName': 'EtudiantToSession',
             'relationFromFields': ['etudiantId'],
             'relationToFields': ['id'],
@@ -2566,7 +2364,6 @@ class PrismaClient extends _i1.BasePrismaClient<PrismaClient> {
       {
         'name': 'Agent',
         'dbName': 'agents',
-        'schema': null,
         'fields': [
           {
             'name': 'id',
@@ -2578,7 +2375,6 @@ class PrismaClient extends _i1.BasePrismaClient<PrismaClient> {
             'isReadOnly': false,
             'hasDefaultValue': true,
             'type': 'Int',
-            'nativeType': null,
             'default': {'name': 'autoincrement', 'args': []},
             'isGenerated': false,
             'isUpdatedAt': false,
@@ -2593,10 +2389,6 @@ class PrismaClient extends _i1.BasePrismaClient<PrismaClient> {
             'isReadOnly': false,
             'hasDefaultValue': false,
             'type': 'String',
-            'nativeType': [
-              'VarChar',
-              ['20'],
-            ],
             'isGenerated': false,
             'isUpdatedAt': false,
           },
@@ -2610,10 +2402,6 @@ class PrismaClient extends _i1.BasePrismaClient<PrismaClient> {
             'isReadOnly': false,
             'hasDefaultValue': false,
             'type': 'String',
-            'nativeType': [
-              'VarChar',
-              ['50'],
-            ],
             'isGenerated': false,
             'isUpdatedAt': false,
           },
@@ -2627,10 +2415,6 @@ class PrismaClient extends _i1.BasePrismaClient<PrismaClient> {
             'isReadOnly': false,
             'hasDefaultValue': false,
             'type': 'String',
-            'nativeType': [
-              'VarChar',
-              ['50'],
-            ],
             'isGenerated': false,
             'isUpdatedAt': false,
           },
@@ -2645,10 +2429,6 @@ class PrismaClient extends _i1.BasePrismaClient<PrismaClient> {
             'isReadOnly': false,
             'hasDefaultValue': false,
             'type': 'String',
-            'nativeType': [
-              'VarChar',
-              ['100'],
-            ],
             'isGenerated': false,
             'isUpdatedAt': false,
           },
@@ -2662,10 +2442,6 @@ class PrismaClient extends _i1.BasePrismaClient<PrismaClient> {
             'isReadOnly': false,
             'hasDefaultValue': false,
             'type': 'String',
-            'nativeType': [
-              'VarChar',
-              ['50'],
-            ],
             'isGenerated': false,
             'isUpdatedAt': false,
           },
@@ -2764,12 +2540,9 @@ class PrismaClient extends _i1.BasePrismaClient<PrismaClient> {
   @override
   get $engine => _engine ??= _i5.BinaryEngine(
     schema:
-        'generator client {\n  provider = "./dart_wrapper.sh run orm"\n  output   = "../lib/generated/prisma"\n}\n\ndatasource db {\n  provider = "postgresql"\n  url      = env("DATABASE_URL")\n}\n\nmodel Etudiant {\n  id           Int           @id @default(autoincrement())\n  matricule    String        @unique @db.VarChar(20)\n  nom          String        @db.VarChar(50)\n  prenom       String        @db.VarChar(50)\n  solde        Int           @default(0)\n  codeSecret   String        @map("code_secret") @db.VarChar(100)\n  codeQr       String        @unique @map("code_qr") @db.VarChar(100)\n  transactions Transaction[]\n  sessions     Session[]\n\n  @@map("etudiants")\n}\n\nmodel Transaction {\n  id                  String   @id @db.VarChar(10)\n  type                String   @db.VarChar(30)\n  montant             Int\n  dateHeure           DateTime @default(now()) @map("date_heure")\n  etudiantId          Int      @map("etudiant_id")\n  autrePartiMatricule String?  @map("autre_parti_matricule") @db.VarChar(20)\n  service             String?  @db.VarChar(20)\n  etudiant            Etudiant @relation(fields: [etudiantId], references: [id])\n\n  @@map("transactions")\n}\n\nmodel Session {\n  id             Int      @id @default(autoincrement())\n  etudiantId     Int      @map("etudiant_id")\n  token          String\n  dateExpiration DateTime @map("date_expiration")\n  etudiant       Etudiant @relation(fields: [etudiantId], references: [id])\n\n  @@map("sessions")\n}\n\nmodel Agent {\n  id         Int     @id @default(autoincrement())\n  matricule  String  @unique @db.VarChar(20)\n  nom        String  @db.VarChar(50)\n  prenom     String  @db.VarChar(50)\n  codeSecret String  @map("code_secret") @db.VarChar(100)\n  poste      String? @db.VarChar(50)\n\n  @@map("agents")\n}\n',
+        'generator client {\n  provider = "./dart_wrapper.sh run orm"\n  output   = "../lib/generated/prisma"\n}\n\ndatasource db {\n  provider = "postgresql"\n  url      = env("DATABASE_URL")\n}\n\nmodel Etudiant {\n  id           Int           @id @default(autoincrement())\n  matricule    String        @unique @db.VarChar(20)\n  nom          String        @db.VarChar(50)\n  prenom       String        @db.VarChar(50)\n  solde        Int           @default(0)\n  codeSecret   String        @map("code_secret") @db.VarChar(100)\n  codeQr       String        @unique @map("code_qr") @db.VarChar(100)\n  role         String        @default("etudiant") @db.VarChar(20)\n  transactions Transaction[]\n  sessions     Session[]\n\n  @@map("etudiants")\n}\n\nmodel Transaction {\n  id                  String   @id @db.VarChar(10)\n  type                String   @db.VarChar(30)\n  montant             Int\n  dateHeure           DateTime @default(now()) @map("date_heure")\n  etudiantId          Int      @map("etudiant_id")\n  autrePartiMatricule String?  @map("autre_parti_matricule") @db.VarChar(20)\n  service             String?  @db.VarChar(20)\n  etudiant            Etudiant @relation(fields: [etudiantId], references: [id])\n\n  @@map("transactions")\n}\n\nmodel Session {\n  id             Int      @id @default(autoincrement())\n  etudiantId     Int      @map("etudiant_id")\n  token          String\n  dateExpiration DateTime @map("date_expiration")\n  etudiant       Etudiant @relation(fields: [etudiantId], references: [id])\n\n  @@map("sessions")\n}\n\nmodel Agent {\n  id         Int     @id @default(autoincrement())\n  matricule  String  @unique @db.VarChar(20)\n  nom        String  @db.VarChar(50)\n  prenom     String  @db.VarChar(50)\n  codeSecret String  @map("code_secret") @db.VarChar(100)\n  poste      String? @db.VarChar(50)\n\n  @@map("agents")\n}\n',
     datasources: const {
-      'db': _i1.Datasource(
-        _i1.DatasourceType.url,
-        'postgresql://postgres:mMjWnhgByXaVizmYMeKqtobgVSwIajAQ@zephyr.proxy.rlwy.net:54918/railway',
-      ),
+      'db': _i1.Datasource(_i1.DatasourceType.environment, 'DATABASE_URL'),
     },
     options: $options,
   );

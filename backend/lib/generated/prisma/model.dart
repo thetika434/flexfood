@@ -110,6 +110,7 @@ class Etudiant {
     this.solde,
     this.codeSecret,
     this.codeQr,
+    this.role,
     this.transactions,
     this.sessions,
     this.$count,
@@ -123,6 +124,7 @@ class Etudiant {
     solde: json['solde'],
     codeSecret: json['codeSecret'],
     codeQr: json['codeQr'],
+    role: json['role'],
     transactions: (json['transactions'] as Iterable?)?.map(
       (json) => _i1.Transaction.fromJson(json),
     ),
@@ -148,6 +150,8 @@ class Etudiant {
 
   final String? codeQr;
 
+  final String? role;
+
   final Iterable<_i1.Transaction>? transactions;
 
   final Iterable<_i1.Session>? sessions;
@@ -162,6 +166,7 @@ class Etudiant {
     'solde': solde,
     'codeSecret': codeSecret,
     'codeQr': codeQr,
+    'role': role,
     'transactions': transactions?.map((e) => e.toJson()),
     'sessions': sessions?.map((e) => e.toJson()),
     '_count': $count?.toJson(),
@@ -177,6 +182,7 @@ class CreateManyEtudiantAndReturnOutputType {
     this.solde,
     this.codeSecret,
     this.codeQr,
+    this.role,
   });
 
   factory CreateManyEtudiantAndReturnOutputType.fromJson(Map json) =>
@@ -188,6 +194,7 @@ class CreateManyEtudiantAndReturnOutputType {
         solde: json['solde'],
         codeSecret: json['codeSecret'],
         codeQr: json['codeQr'],
+        role: json['role'],
       );
 
   final int? id;
@@ -204,52 +211,7 @@ class CreateManyEtudiantAndReturnOutputType {
 
   final String? codeQr;
 
-  Map<String, dynamic> toJson() => {
-    'id': id,
-    'matricule': matricule,
-    'nom': nom,
-    'prenom': prenom,
-    'solde': solde,
-    'codeSecret': codeSecret,
-    'codeQr': codeQr,
-  };
-}
-
-class UpdateManyEtudiantAndReturnOutputType {
-  const UpdateManyEtudiantAndReturnOutputType({
-    this.id,
-    this.matricule,
-    this.nom,
-    this.prenom,
-    this.solde,
-    this.codeSecret,
-    this.codeQr,
-  });
-
-  factory UpdateManyEtudiantAndReturnOutputType.fromJson(Map json) =>
-      UpdateManyEtudiantAndReturnOutputType(
-        id: json['id'],
-        matricule: json['matricule'],
-        nom: json['nom'],
-        prenom: json['prenom'],
-        solde: json['solde'],
-        codeSecret: json['codeSecret'],
-        codeQr: json['codeQr'],
-      );
-
-  final int? id;
-
-  final String? matricule;
-
-  final String? nom;
-
-  final String? prenom;
-
-  final int? solde;
-
-  final String? codeSecret;
-
-  final String? codeQr;
+  final String? role;
 
   Map<String, dynamic> toJson() => {
     'id': id,
@@ -259,6 +221,7 @@ class UpdateManyEtudiantAndReturnOutputType {
     'solde': solde,
     'codeSecret': codeSecret,
     'codeQr': codeQr,
+    'role': role,
   };
 }
 
@@ -276,64 +239,6 @@ class CreateManyTransactionAndReturnOutputType {
 
   factory CreateManyTransactionAndReturnOutputType.fromJson(Map json) =>
       CreateManyTransactionAndReturnOutputType(
-        id: json['id'],
-        type: json['type'],
-        montant: json['montant'],
-        dateHeure: switch (json['dateHeure']) {
-          DateTime value => value,
-          String value => DateTime.parse(value),
-          _ => json['dateHeure'],
-        },
-        etudiantId: json['etudiantId'],
-        autrePartiMatricule: json['autrePartiMatricule'],
-        service: json['service'],
-        etudiant: json['etudiant'] is Map
-            ? _i1.Etudiant.fromJson(json['etudiant'])
-            : null,
-      );
-
-  final String? id;
-
-  final String? type;
-
-  final int? montant;
-
-  final DateTime? dateHeure;
-
-  final int? etudiantId;
-
-  final String? autrePartiMatricule;
-
-  final String? service;
-
-  final _i1.Etudiant? etudiant;
-
-  Map<String, dynamic> toJson() => {
-    'id': id,
-    'type': type,
-    'montant': montant,
-    'dateHeure': dateHeure?.toIso8601String(),
-    'etudiantId': etudiantId,
-    'autrePartiMatricule': autrePartiMatricule,
-    'service': service,
-    'etudiant': etudiant?.toJson(),
-  };
-}
-
-class UpdateManyTransactionAndReturnOutputType {
-  const UpdateManyTransactionAndReturnOutputType({
-    this.id,
-    this.type,
-    this.montant,
-    this.dateHeure,
-    this.etudiantId,
-    this.autrePartiMatricule,
-    this.service,
-    this.etudiant,
-  });
-
-  factory UpdateManyTransactionAndReturnOutputType.fromJson(Map json) =>
-      UpdateManyTransactionAndReturnOutputType(
         id: json['id'],
         type: json['type'],
         montant: json['montant'],
@@ -421,49 +326,6 @@ class CreateManySessionAndReturnOutputType {
   };
 }
 
-class UpdateManySessionAndReturnOutputType {
-  const UpdateManySessionAndReturnOutputType({
-    this.id,
-    this.etudiantId,
-    this.token,
-    this.dateExpiration,
-    this.etudiant,
-  });
-
-  factory UpdateManySessionAndReturnOutputType.fromJson(Map json) =>
-      UpdateManySessionAndReturnOutputType(
-        id: json['id'],
-        etudiantId: json['etudiantId'],
-        token: json['token'],
-        dateExpiration: switch (json['dateExpiration']) {
-          DateTime value => value,
-          String value => DateTime.parse(value),
-          _ => json['dateExpiration'],
-        },
-        etudiant: json['etudiant'] is Map
-            ? _i1.Etudiant.fromJson(json['etudiant'])
-            : null,
-      );
-
-  final int? id;
-
-  final int? etudiantId;
-
-  final String? token;
-
-  final DateTime? dateExpiration;
-
-  final _i1.Etudiant? etudiant;
-
-  Map<String, dynamic> toJson() => {
-    'id': id,
-    'etudiantId': etudiantId,
-    'token': token,
-    'dateExpiration': dateExpiration?.toIso8601String(),
-    'etudiant': etudiant?.toJson(),
-  };
-}
-
 class Agent {
   const Agent({
     this.id,
@@ -517,48 +379,6 @@ class CreateManyAgentAndReturnOutputType {
 
   factory CreateManyAgentAndReturnOutputType.fromJson(Map json) =>
       CreateManyAgentAndReturnOutputType(
-        id: json['id'],
-        matricule: json['matricule'],
-        nom: json['nom'],
-        prenom: json['prenom'],
-        codeSecret: json['codeSecret'],
-        poste: json['poste'],
-      );
-
-  final int? id;
-
-  final String? matricule;
-
-  final String? nom;
-
-  final String? prenom;
-
-  final String? codeSecret;
-
-  final String? poste;
-
-  Map<String, dynamic> toJson() => {
-    'id': id,
-    'matricule': matricule,
-    'nom': nom,
-    'prenom': prenom,
-    'codeSecret': codeSecret,
-    'poste': poste,
-  };
-}
-
-class UpdateManyAgentAndReturnOutputType {
-  const UpdateManyAgentAndReturnOutputType({
-    this.id,
-    this.matricule,
-    this.nom,
-    this.prenom,
-    this.codeSecret,
-    this.poste,
-  });
-
-  factory UpdateManyAgentAndReturnOutputType.fromJson(Map json) =>
-      UpdateManyAgentAndReturnOutputType(
         id: json['id'],
         matricule: json['matricule'],
         nom: json['nom'],
