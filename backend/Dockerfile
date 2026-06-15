@@ -22,6 +22,7 @@ COPY prisma/ ./prisma/
 RUN sed -i \
     -e 's|provider = "./dart_wrapper.sh run orm"|provider = "prisma-client-js"|' \
     -e '/provider = "prisma-client-js"/a\  engineType = "binary"' \
+    -e '/engineType = "binary"/a\  binaryTargets = ["debian-openssl-3.0.x"]' \
     prisma/schema.prisma
 RUN npm install && npx prisma generate
 
