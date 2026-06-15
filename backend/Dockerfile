@@ -20,10 +20,9 @@ COPY prisma/ ./prisma/
 
 # Forcer le téléchargement du moteur binaire natif Debian
 RUN sed -i \
-    -e 's|provider = "./dart_wrapper.sh run orm"|provider = "prisma-client-js"|' \
-    -e '/provider = "prisma-client-js"/a\  engineType = "binary"' \
-    -e '/engineType = "binary"/a\  binaryTargets = ["debian-openssl-3.0.x"]' \
-    prisma/schema.prisma
+    's|provider = "./dart_wrapper.sh run orm"|provider = "prisma-client-js"\n  engineType = "binary"\n  binaryTargets = ["debian-openssl-3.0.x"]|' \
+    prisma/schema.prisma \
+    && cat prisma/schema.prisma | head -6
 RUN npm install && npx prisma generate
 
 # Copier le binaire engine vers un chemin fixe
