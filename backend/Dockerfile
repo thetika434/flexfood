@@ -39,6 +39,13 @@ WORKDIR /app
 COPY --from=dart-builder /app/bin/serveur ./serveur
 COPY --from=prisma-builder /app/engine ./prisma/prisma-query-engine
 
+# Diagnostic : vérifier que le binaire engine peut s'exécuter
+RUN chmod +x ./prisma/prisma-query-engine \
+    && echo "=== ENGINE FILE ===" \
+    && ls -lh ./prisma/prisma-query-engine \
+    && echo "=== ENGINE VERSION ===" \
+    && ./prisma/prisma-query-engine --version 2>&1 || echo "ENGINE FAILED exit=$?"
+
 ENV DATABASE_URL="postgresql://postgres:mMjWnhgByXaVizmYMeKqtobgVSwIajAQ@zephyr.proxy.rlwy.net:54918/railway"
 ENV PORT=8080
 
